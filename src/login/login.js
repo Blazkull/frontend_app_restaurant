@@ -1,4 +1,5 @@
 import api from "../api/api.js";
+import showAlert from "../components/alerts.js";
 
 document.getElementById("loginForm").addEventListener("submit", async function (e) {
   e.preventDefault();
@@ -7,36 +8,44 @@ document.getElementById("loginForm").addEventListener("submit", async function (
   const password = document.getElementById("password").value.trim();
 
   if (!username || !password) {
-    alert("Por favor ingrese usuario y contraseña.");
+    showAlert({
+      title: "Campos vacíos",
+      message: "Por favor ingrese usuario y contraseña.",
+      type: "info",
+    });
     return;
   }
 
   try {
-    const response = await api.post(`/auth/login`, {
-      username,
-      password
-    }, {
-      headers: {
-        "Content-Type": "application/json"
-      }
+    const response = await api.post(`/auth/login`, { username, password }, {
+      headers: { "Content-Type": "application/json" }
     });
 
     const data = response.data;
 
-    // Guardar token y rol
+    // Guardar token, rol y nombre del usuario ingresado
     localStorage.setItem("token", data.access_token);
     localStorage.setItem("role", data.role_name);
-    
-    // Redirigir al dashboard
-    window.location.href = "../dashboard/dashboard.html";
+    localStorage.setItem("username", username); // GUARDAR USERNAME
+
+    // Redirigir al dashboard o página principal
+    window.location.href = "../../main.html";
 
   } catch (error) {
     if (error.response) {
       console.error("Error en respuesta:", error.response.data);
-      alert("Credenciales incorrectas o usuario no válido.");
+      showAlert({
+        title: "Error de autenticación",
+        message: "Credenciales incorrectas o usuario no válido.",
+        type: "error",
+      });
     } else {
       console.error("Error de conexión:", error.message);
-      alert("No se pudo conectar con el servidor.");
+      showAlert({
+        title: "Error de conexión",
+        message: "No se pudo conectar con el servidor. Verifica tu conexión o inténtalo más tarde.",
+        type: "error",
+      });
     }
   }
 });

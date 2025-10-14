@@ -32,7 +32,6 @@
 .grid-right {
     background-position:
         240px 40px,
-        /* puedes ajustar para que no coincida con la izquierda */
         200px 80px,
         0 0,
         0 0;
