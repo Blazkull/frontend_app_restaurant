@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vista Mesero - Mesas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'primary-blue': '#4c6fff', 
+                }
+            }
+        }
+    }
+  </script>
+</head>
+
+<body class="bg-gray-50 antialiased font-sans">
+  <div class="flex min-h-screen">
+    <div id="sidebar">
+      </div>
+
+    <main class="ml-64 flex-1 flex flex-col">
+      <div id="topbar">
+        </div>
+
+      <div id="content" class="p-6">
+
+        <main class="flex-1 p-6">
+          <header class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Mapa de Mesas</h1>
+            </header>
+
+          <div id="mesas-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            </div>
+        </main>
+
+        </div>
+    </main>
+  </div>
+
+  <script src="../components/components.js"></script>
+  <script src="./tables_list.js"></script> <script>
+    // Inicializar sidebar/topbar (asumiendo que estas funciones existen)
+    if (typeof initComponents === 'function') {
+        initComponents();
+    }
+    // Lógica para el botón Cerrar Sesión (Demo)
+    const cerrarSesionBtn = document.getElementById('cerrar-sesion-btn');
+    if (cerrarSesionBtn) {
+        cerrarSesionBtn.addEventListener('click', () => {
+            alert("(Demo) Cerrar Sesión");
+        });
+    }
+  </script>
+</body>
+
+</html>

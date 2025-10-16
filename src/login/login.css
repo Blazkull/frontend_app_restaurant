@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+/* Base del patrón (se reutiliza en ambas esquinas) */
+.grid-base {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)),
+        linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)),
+        linear-gradient(to right, #ffffff33 1px, transparent 1px),
+        linear-gradient(to bottom, #ffffff33 1px, transparent 1px);
+
+    background-size:
+        40px 40px,
+        40px 40px,
+        40px 40px,
+        40px 40px;
+
+    background-repeat: no-repeat, no-repeat, repeat, repeat;
+}
+
+/* Para la esquina izquierda */
+.grid-left {
+    background-position:
+        40px 120px,
+        /* cuadro columna 2, fila 2 */
+        80px 80px,
+        /* cuadro columna 3, fila 3 */
+        0 0,
+        0 0;
+}
+
+/* Para la esquina derecha */
+.grid-right {
+    background-position:
+        240px 40px,
+        200px 80px,
+        0 0,
+        0 0;
+}
+
+/* Difuminado superior derecha */
+.mask-gradient-tr {
+    -webkit-mask-image: radial-gradient(circle at top right, white 75%, transparent 100%);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: cover;
+    mask-image: radial-gradient(circle at top right, white 75%, transparent 100%);
+    mask-repeat: no-repeat;
+    mask-size: cover;
+}
+
+/* Difuminado inferior izquierda */
+.mask-gradient-bl {
+    -webkit-mask-image: radial-gradient(circle at bottom left, white 75%, transparent 100%);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: cover;
+    mask-image: radial-gradient(circle at bottom left, white 75%, transparent 100%);
+    mask-repeat: no-repeat;
+    mask-size: cover;
+}
