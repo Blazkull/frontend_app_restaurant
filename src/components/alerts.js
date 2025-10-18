@@ -77,7 +77,7 @@ function showAlert({
         },
         confirm: {
             bg: "bg-indigo-100",
-            icon: "../svg/check-mark-ceircle_green.svg"
+            icon: "../svg/info_blue.svg"
         }
     };
 

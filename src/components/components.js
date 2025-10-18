@@ -27,7 +27,7 @@ function renderSidebar(containerId) {
                         <img src="../svg/calendar.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Menú
                     </a>
-                    <a href="../mesas/tables.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                    <a href="../mesas/mesas.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
                         <img src="../svg/flag.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Mesas
                     </a>
