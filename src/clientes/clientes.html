@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  </head>
+  <body>
+    <!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TailAdmin - Clientes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#4c6fff', // Color principal para botones y acentos
+                        // Nuevos colores personalizados
+                        'input-border': '#D0D5DD', // Color para el borde de los inputs
+                        'label-text': '#344054',   // Color para los labels
+                    }
+                }
+            },
+            // Configuración para aplicar estilos a placeholders
+            plugins: [
+                function ({ addUtilities }) {
+                    addUtilities({
+                        '.placeholder-input-border::placeholder': {
+                            color: '#D0D5DD',
+                        },
+                    }, ['responsive', 'focus'])
+                }
+            ]
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 antialiased font-sans">
+    <div class="flex min-h-screen">
+        <div id="sidebar"></div>
+
+        <main class="ml-64 flex-1 flex flex-col">
+            <div id="topbar"></div>
+
+            <div id="content" class="p-6">
+
+                <main class="flex-1 p-6 bg-white rounded-xl shadow-lg">
+                    <header class="mb-6">
+                        <h1 class="text-2xl font-bold border-b pb-2">Lista de Clientes</h1>
+                        <p class="text-sm text-gray-500 mt-1">Home > Clientes</p>
+                    </header>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-600 mr-2">Ver</span>
+                                <select class="border border-gray-300 rounded-lg p-1.5 text-sm focus:ring-primary-blue focus:border-primary-blue" id="items-per-page">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div class="relative">
+                                <!-- Aplicando estilo de borde y placeholder al input de búsqueda -->
+                                <input type="text" placeholder="Search..."
+                                    class="pl-10 pr-4 py-1.5 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue placeholder-input-border" id="search-input">
+                                <svg data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></svg>
+                            </div>
+                        </div>
+
+                        <button id="crear-cliente-btn"
+                            class="flex items-center px-4 py-2 bg-primary-blue text-white rounded-xl font-medium hover:bg-blue-700 shadow-md">
+                            <svg data-lucide="plus" class="w-5 h-5 mr-2"></svg>
+                            Crear Cliente
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left">
+                                        <div class="flex items-center">
+                                            Nombre Cliente
+                                            <svg data-lucide="arrow-down-up" class="w-3 h-3 ml-1 cursor-pointer"></svg>
+                                        </div>
+                                    </th>
+                                    <th class="px-6 py-3 text-left">Dirección</th>
+                                    <th class="px-6 py-3 text-left">Correo</th>
+                                    <th class="px-6 py-3 text-left">Cédula</th>
+                                    <th class="px-6 py-3 text-left">Teléfono</th>
+                                    <th class="px-6 py-3 text-left">Actualizado</th>
+                                    <th class="px-6 py-3 text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientes-table-body" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                        </table>
+                    </div>
+
+                    <div id="pagination-footer" class="flex justify-between items-center mt-4">
+                        <p class="text-sm text-gray-600">Mostrando 1 - 10 de <span id="total-datos">37</span> Datos</p>
+                        <div class="flex items-center space-x-2" id="pagination-controls">
+                            <button class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">Previo</button>
+                            <span class="px-3 py-1 text-sm bg-primary-blue text-white rounded-lg">1</span>
+                            <button class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">2</button>
+                            <button class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">Siguiente</button>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE CREACIÓN DE CLIENTE (CON ESTILOS ACTUALIZADOS) -->
+    <div id="modal-creacion-cliente"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay opacity-0 bg-black/20" 
+        aria-modal="true" role="dialog" aria-labelledby="modal-title">
+        
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg transform transition-all duration-300 scale-95">
+            <h2 id="modal-title" class="text-xl font-semibold mb-4 border-b pb-2">Creación de Cliente</h2>
+
+            <form id="form-crear-cliente" class="space-y-4">
+
+                <!-- Fila 1: Tipo y Número de Documento -->
+                <div class="flex space-x-4">
+                    <div class="flex-1">
+                        <div class="w-5/5">
+                            <!-- LABEL: text-label-text (#344054) -->
+                            <label for="tipo-documento" class="block text-sm font-medium text-label-text">Tipo Documento</label>
+                            <!-- SELECT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
+                            <select id="tipo-documento" required
+                                class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 text-base focus:outline-none focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
+                                <option value="" >Seleccionar</option>
+                                <option value="CEDULA">Cédula</option>
+                                <option value="CEDULA_EXTR">Cédula Extranjería</option>
+                                <option value="PASAPORTE">Pasaporte</option>
+                                <option value="NIT">NIT</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="w-5/5">
+                            <!-- LABEL: text-label-text (#344054) -->
+                            <label for="cedula-cliente" class="block text-sm font-medium text-label-text">Número</label>
+                            <!-- INPUT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
+                            <input type="text" id="cedula-cliente" placeholder="Ej: 1045735577" required
+                                class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fila 2: Nombre Completo y Correo -->
+                <div class="flex space-x-4">
+                    <div class="flex-1">
+                        <!-- LABEL: text-label-text (#344054) -->
+                        <label for="nombre-cliente" class="block text-sm font-medium text-label-text">Nombre Completo</label>
+                        <!-- INPUT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
+                        <input type="text" id="nombre-cliente" placeholder="Ej: Juan Pérez" required
+                            class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
+                    </div>
+                    <div class="flex-1">
+                        <!-- LABEL: text-label-text (#344054) -->
+                        <label for="correo-cliente" class="block text-sm font-medium text-label-text">Correo</label>
+                        <!-- INPUT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
+                        <input type="email" id="correo-cliente" placeholder="Ej: correo@ejemplo.com" required
+                            class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
+                    </div>
+                </div>
+                
+                <!-- Fila 3: Teléfono y Dirección -->
+                <div class="flex space-x-4">
+                    <div class="flex-1">
+                        <!-- LABEL: text-label-text (#344054) -->
+                        <label for="telefono-cliente" class="block text-sm font-medium text-label-text">Teléfono</label>
+                        <!-- INPUT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
+                        <input type="tel" id="telefono-cliente" placeholder="Ej: +57 3023964845" required
+                            class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
+                    </div>
+                    <div class="flex-1">
+                        <!-- LABEL: text-label-text (#344054) -->
+                        <label for="direccion-cliente" class="block text-sm font-medium text-label-text">Dirección</label>
+                        <!-- INPUT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
+                        <input type="text" id="direccion-cliente" placeholder="Ej: Cra 87#109A-34" required
+                            class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelar-cliente-btn"
+                        class="px-4 py-2 text-gray-700 bg-gray-200 rounded-xl font-medium hover:bg-gray-300 transition duration-150">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-primary-blue text-white rounded-xl font-medium hover:bg-blue-700 transition duration-150 shadow-md">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="../components/components.js"></script>
+    <script src="./clientes.js"></script>
+    <script>
+        // Asumiendo que initComponents maneja el sidebar y topbar
+        if (typeof initComponents === 'function') {
+            initComponents();
+        }
+        // Inicializar íconos de Lucide
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
