@@ -140,7 +140,7 @@ window.openEditModal = openEditModal;
 // Editar usuario
 // =============================
 async function editUser(id) {
-  const numericId = Number(id); // ✅ conversión segura
+  const numericId = Number(id); 
   const user = users.find((u) => u.id === numericId);
   if (!user)
     return showAlert({
@@ -459,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =============================
-// 🔍 BÚSQUEDA Y FILTRO (por nombre, rol, estado)
+// BÚSQUEDA Y FILTRO (por nombre, rol, estado)
 // =============================
 
 // Elementos de la interfaz
@@ -606,13 +606,13 @@ filterBtn.addEventListener("click", () => {
   const modal = document.getElementById("filterModal");
   const modalBox = modal.querySelector("div");
 
-  // 👇 Aparece con animación
+  // Aparece con animación
   requestAnimationFrame(() => {
     modal.classList.remove("opacity-0", "invisible");
     modalBox.classList.remove("scale-95");
   });
 
-  // 🚪 Cerrar modal con animación
+  // Cerrar modal con animación
   const closeModal = () => {
     modalBox.classList.add("scale-95");
     modal.classList.add("opacity-0");
@@ -667,7 +667,6 @@ async function toggleUserStatus(id, currentStatus) {
   });
 }*/
 
-// =============================
 // Exponer globales
 // =============================
 window.editUser = editUser;

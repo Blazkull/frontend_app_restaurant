@@ -43,7 +43,7 @@ function renderSidebar(containerId) {
                         <img src="../svg/reportes.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Reportes
                     </a>
-                    <a href="../facturacion/facturacion.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                    <a href="../facturacion/invoices.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
                         <img src="../svg/ticket.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Facturacion
                     </a>
@@ -54,6 +54,7 @@ function renderSidebar(containerId) {
             <div class="p-4">
                 <button id="sidebarLogout" class="flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg w-full font-medium hover:bg-indigo-700 transition shadow-md">
                 Cerrar Sesión
+                <img src="../svg/exit.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                 </button>
             </div>
         </div>
@@ -67,6 +68,9 @@ function renderTopbar(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    // Obtener nombre del usuario desde localStorage
+    const username = localStorage.getItem("username") || "Usuario";
+
     container.innerHTML = `
         <header class="sticky top-0 z-10 w-full bg-white shadow-sm border-b border-gray-100">
             <div class="flex justify-end items-center h-16 px-6">
@@ -76,7 +80,7 @@ function renderTopbar(containerId) {
                         <div class="flex items-center gap-3">
                             <img src="https://cdn-icons-png.flaticon.com/128/6676/6676016.png" alt="User Avatar"
                                 class="w-8 h-8 rounded-full object-cover ring-2 ring-blue-500 ring-offset-2" />
-                            <span class="text-gray-800 font-medium text-sm hidden sm:block">User</span>
+                            <span id="userName" class="text-gray-800 font-medium text-sm hidden sm:block">${username}</span>
                         </div>
                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
                             viewBox="0 0 24 24">
