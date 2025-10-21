@@ -11,21 +11,26 @@ let currentInvoiceToDeleteId = null;
 
 // =========================================================
 // Mapeo de IDs (CRUCIAL para PATCH y DELETE)
-// Asumimos estos IDs para el estado de la factura
+// Se usan los IDs de la tabla 'status' del script SQL (db_restraurante_la_media_luna)
+// Pagada: ID 13, Anulada: ID 14
 // =========================================================
 const statusMap = {
-    "Pagada": 1,
-    "Pendiente": 2, 
-    "Anulada": 3,
-    "Draft": 4, // Si tuvieras un estado borrador
+    // Nombre que el usuario ve / nombre de la DB: ID de la DB
+    "Pagada": 13,
+    "Anulada": 14,
+    "Pendiente": 5, // Usaremos 'Creada' (ID 5) como estado intermedio/Pendiente de pago.
+    "Draft": 4,     // Usamos 'Disponible' (ID 4) de ejemplo, ¡Asegúrate de que este ID sea correcto!
 };
 // Mapeo inverso para poblar el modal de edición
 const statusNameMap = {
-    1: "Pagada",
-    2: "Pendiente",
-    3: "Anulada",
-    4: "Draft",
+    13: "Pagada",
+    14: "Anulada",
+    5: "Pendiente", // ID 5 corresponde a 'Creada' en tu tabla status
+    4: "Draft",     // ID 4 corresponde a 'Disponible'
 };
+
+// **NOTA:** Ajusta los IDs 5 y 4 si tu API usa IDs diferentes para "Pendiente" y "Draft".
+// Si no tienes 'Draft', puedes eliminarlo de ambos mapeos.
 
 // =========================================================
 // ELEMENTOS MODALES
