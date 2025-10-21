@@ -63,8 +63,17 @@
 
     <div id="logoutModal"></div> 
     
-    <script src="../components/components.js"></script>
+    
     <script type="module" src="./menu.js"></script> 
+    <script src="../components/components.js"></script>
+    <script type="module" src="./orders.js"></script>
+    <script type="module" src="../api/api.js"></script>
+    <script type="module" src="../components/alerts.js"></script>
+    <script>
+        if (typeof initComponents === 'function') {
+            initComponents();
+        }
+    </script>
     <script>
         if (typeof initComponents === 'function') {
             initComponents();

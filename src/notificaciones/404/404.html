@@ -85,6 +85,14 @@
 
 </html>
     <script type="module" src="./404.js"></script>
-    <script type="module" src="../../components/components.js"></script>
+    <script src="../components/components.js"></script>
+    <script type="module" src="./orders.js"></script>
+    <script type="module" src="../api/api.js"></script>
+    <script type="module" src="../components/alerts.js"></script>
+    <script>
+        if (typeof initComponents === 'function') {
+            initComponents();
+        }
+    </script>
   </body>
 </html>
