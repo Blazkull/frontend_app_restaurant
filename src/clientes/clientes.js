@@ -1,20 +1,20 @@
 // Datos de prueba basados en la imagen
-let clientesDemo = [
-    { id: 1, nombre: "Lindsey Curtis", direccion: "Cra 87#109A-34", correo: "Lindsey44@gmail.com", cedula: "1045735577", telefono: "+57 3023964845", actualizado: "12 Feb, 2027" },
-    { id: 2, nombre: "Kaiya George", direccion: "Cra 87#109A-34", correo: "kaiya.g@mail.com", cedula: "1045735578", telefono: "+57 3023964846", actualizado: "13 Mar, 2027" },
-    { id: 3, nombre: "Zoin Geldt", direccion: "Cra 87#109A-34", correo: "zoing@test.com", cedula: "1045735579", telefono: "+57 3023964847", actualizado: "19 Mar, 2027" },
-    { id: 4, nombre: "Abram Schleifer", direccion: "Cra 87#109A-34", correo: "abram.s@test.com", cedula: "1045735580", telefono: "+57 3023964848", actualizado: "25 Apr, 2027" },
-    { id: 5, nombre: "Carla George", direccion: "Cra 87#109A-34", correo: "carla.g@test.com", cedula: "1045735581", telefono: "+57 3023964849", actualizado: "11 May, 2027" },
-    { id: 6, nombre: "Emery Culhane", direccion: "Cra 87#109A-34", correo: "emery.c@test.com", cedula: "1045735582", telefono: "+57 3023964850", actualizado: "29 Jun, 2027" },
-    { id: 7, nombre: "Livia Donin", direccion: "Cra 87#109A-34", correo: "livia.d@test.com", cedula: "1045735583", telefono: "+57 3023964851", actualizado: "22 Jul, 2027" },
-    { id: 8, nombre: "Miracle Bator", direccion: "Cra 87#109A-34", correo: "miracle.b@test.com", cedula: "1045735584", telefono: "+57 3023964852", actualizado: "05 Aug, 2027" },
-    { id: 9, nombre: "Lincoln Herwitz", direccion: "Cra 87#109A-34", correo: "lincoln.h@test.com", cedula: "1045735585", telefono: "+57 3023964853", actualizado: "09 Sep, 2027" },
-    { id: 10, nombre: "Ekstrom Bothman", direccion: "Cra 87#109A-34", correo: "ekstrom.b@test.com", cedula: "1045735586", telefono: "+57 3023964854", actualizado: "15 Nov, 2027" },
-    // Añadir más datos para simular paginación/total
-    { id: 11, nombre: "Andrea García", direccion: "Calle 10#5-20", correo: "andrea@test.com", cedula: "1045735587", telefono: "+57 3023964855", actualizado: "20 Nov, 2027" },
-    { id: 12, nombre: "Carlos Vives", direccion: "Av. Caracas 1-1", correo: "carlos@test.com", cedula: "1045735588", telefono: "+57 3023964856", actualizado: "01 Dec, 2027" },
-    { id: 13, nombre: "Daniela Castro", direccion: "Cl. 100 #20-5", correo: "daniela@test.com", cedula: "1045735589", telefono: "+57 3023964857", actualizado: "05 Dec, 2027" },
-];
+// let clientesDemo = [
+//     { id: 1, nombre: "Lindsey Curtis", direccion: "Cra 87#109A-34", correo: "Lindsey44@gmail.com", cedula: "1045735577", telefono: "+57 3023964845", actualizado: "12 Feb, 2027" },
+//     { id: 2, nombre: "Kaiya George", direccion: "Cra 87#109A-34", correo: "kaiya.g@mail.com", cedula: "1045735578", telefono: "+57 3023964846", actualizado: "13 Mar, 2027" },
+//     { id: 3, nombre: "Zoin Geldt", direccion: "Cra 87#109A-34", correo: "zoing@test.com", cedula: "1045735579", telefono: "+57 3023964847", actualizado: "19 Mar, 2027" },
+//     { id: 4, nombre: "Abram Schleifer", direccion: "Cra 87#109A-34", correo: "abram.s@test.com", cedula: "1045735580", telefono: "+57 3023964848", actualizado: "25 Apr, 2027" },
+//     { id: 5, nombre: "Carla George", direccion: "Cra 87#109A-34", correo: "carla.g@test.com", cedula: "1045735581", telefono: "+57 3023964849", actualizado: "11 May, 2027" },
+//     { id: 6, nombre: "Emery Culhane", direccion: "Cra 87#109A-34", correo: "emery.c@test.com", cedula: "1045735582", telefono: "+57 3023964850", actualizado: "29 Jun, 2027" },
+//     { id: 7, nombre: "Livia Donin", direccion: "Cra 87#109A-34", correo: "livia.d@test.com", cedula: "1045735583", telefono: "+57 3023964851", actualizado: "22 Jul, 2027" },
+//     { id: 8, nombre: "Miracle Bator", direccion: "Cra 87#109A-34", correo: "miracle.b@test.com", cedula: "1045735584", telefono: "+57 3023964852", actualizado: "05 Aug, 2027" },
+//     { id: 9, nombre: "Lincoln Herwitz", direccion: "Cra 87#109A-34", correo: "lincoln.h@test.com", cedula: "1045735585", telefono: "+57 3023964853", actualizado: "09 Sep, 2027" },
+//     { id: 10, nombre: "Ekstrom Bothman", direccion: "Cra 87#109A-34", correo: "ekstrom.b@test.com", cedula: "1045735586", telefono: "+57 3023964854", actualizado: "15 Nov, 2027" },
+//     // Añadir más datos para simular paginación/total
+//     { id: 11, nombre: "Andrea García", direccion: "Calle 10#5-20", correo: "andrea@test.com", cedula: "1045735587", telefono: "+57 3023964855", actualizado: "20 Nov, 2027" },
+//     { id: 12, nombre: "Carlos Vives", direccion: "Av. Caracas 1-1", correo: "carlos@test.com", cedula: "1045735588", telefono: "+57 3023964856", actualizado: "01 Dec, 2027" },
+//     { id: 13, nombre: "Daniela Castro", direccion: "Cl. 100 #20-5", correo: "daniela@test.com", cedula: "1045735589", telefono: "+57 3023964857", actualizado: "05 Dec, 2027" },
+// ];
 
 const tableBody = document.getElementById("clientes-table-body");
 const totalDatosSpan = document.getElementById("total-datos");
