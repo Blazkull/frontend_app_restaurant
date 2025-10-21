@@ -1,31 +1,32 @@
-// Configuración de la API
+// api.js
 
+import axios from 'axios';
 
-//Detectar entorno (usa solo el backend en la nube si el local no está activo)
-const isBackendLocal = false; //cambiar a true si se va a usar el backend local
-const API_URL_LOCAL = "http://127.0.0.1:8000";
-const API_URL_PROD = "https://backend-app-restaurant-2kfa.onrender.com";
+// 1. Define la URL base de tu backend (sin la / final)
+const API_BASE_URL = 'https://backend-app-restaurant-2kfa.onrender.com/api';
 
-const API_URL = isBackendLocal ? API_URL_LOCAL : API_URL_PROD;
-
-
-// Crear instancia de Axios
 const api = axios.create({
-  baseURL: `${API_URL}/api`,
+    baseURL: API_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
+// 2. Interceptor para inyectar el token ANTES de cada solicitud
+api.interceptors.request.use(
+    (config) => {
+        // Asumimos que el token se guarda como 'authToken' al iniciar sesión
+        const token = localStorage.getItem('authToken'); 
 
-// Interceptor
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+        if (token) {
+            // Añade el token al encabezado Authorization en formato Bearer
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  if (role) config.headers["X-User-Role"] = role;
-
-  return config;
-});
-
-
-// Exportar instancia para usar en otros archivos
 export default api;

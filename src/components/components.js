@@ -31,6 +31,10 @@ function renderSidebar(containerId) {
                         <img src="../svg/flag.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Mesas
                     </a>
+                    <a href="../cocina/cocina.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/menu_bars.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                        Cocina
+                    </a>
                     <a href="../clientes/clientes.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
                         <img src="../svg/clients.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Clientes

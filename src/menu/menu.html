@@ -33,12 +33,12 @@
                 <header class="mb-6">
                     <h1 class="text-2xl font-bold">Menú</h1>
                     <div id="category-buttons" class="flex space-x-2 mt-4 overflow-x-auto pb-2">
-                        </div>
+                    </div>
                 </header>
 
                 <div class="flex space-x-6">
                     <div id="menu-grid" class="flex-1 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-                        </div>
+                    </div>
 
                     <div class="w-80 flex-shrink-0 bg-white border border-gray-200 rounded-xl shadow-lg p-4 h-fit sticky top-6">
                         <h2 id="comanda-title" class="font-bold text-xl mb-4 border-b pb-2 text-center text-gray-800">
@@ -46,13 +46,13 @@
                         </h2>
                         
                         <div id="comanda-list" class="space-y-4 min-h-[100px] max-h-[70vh] overflow-y-auto pr-2">
-                            </div>
+                        </div>
 
                         <div class="mt-6 pt-4 border-t">
                              <button id="enviar-pedido-btn"
-                                class="w-full py-3 bg-primary-blue text-white rounded-xl font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                Enviar pedido
-                            </button>
+                                 class="w-full py-3 bg-primary-blue text-white rounded-xl font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                 Enviar pedido
+                             </button>
                         </div>
                     </div>
                 </div>
@@ -64,16 +64,10 @@
     <div id="logoutModal"></div> 
     
     
-    <script type="module" src="./menu.js"></script> 
     <script src="../components/components.js"></script>
-    <script type="module" src="./orders.js"></script>
+    <script type="module" src="./menu.js"></script> 
     <script type="module" src="../api/api.js"></script>
     <script type="module" src="../components/alerts.js"></script>
-    <script>
-        if (typeof initComponents === 'function') {
-            initComponents();
-        }
-    </script>
     <script>
         if (typeof initComponents === 'function') {
             initComponents();

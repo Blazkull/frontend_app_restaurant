@@ -1,4 +1,4 @@
-// menu.js
+// menu.js (Corregido y con llamadas a API)
 
 import api from '../api/api.js'; 
 
@@ -6,17 +6,18 @@ const menuGrid = document.getElementById("menu-grid");
 const comandaList = document.getElementById("comanda-list");
 const comandaTitle = document.getElementById("comanda-title");
 const enviarPedidoBtn = document.getElementById("enviar-pedido-btn");
-const categoryButtonsContainer = document.getElementById("category-buttons"); // Nuevo ID
+const categoryButtonsContainer = document.getElementById("category-buttons");
 
-// ID de Mesa Activa (Mock para desarrollo)
+// ID de Mesa Activa (Mock para desarrollo) - En una app real, esto viene de la URL
 const ACTIVE_TABLE_ID = 3; 
 const ACTIVE_TABLE_NAME = "Mesa 3"; 
 
 let currentOrder = []; 
 let productsData = []; 
+let allCategories = []; 
 
 // =========================================================
-// DATOS MOCK DE CATEGORÍAS
+// DATOS MOCK DE CATEGORÍAS Y PRODUCTOS (Fallback si la API falla)
 // =========================================================
 const MOCK_CATEGORIES = [
     { id: 1, name: "Pizzas", active: true },
@@ -26,26 +27,78 @@ const MOCK_CATEGORIES = [
     { id: 5, name: "Postres" },
 ];
 
-// =========================================================
-// DATOS MOCK DE PRODUCTOS (Asumimos que todos son de la categoría Pizzas por ahora)
-// Repetimos el mismo producto para llenar la vista como en la imagen
-// =========================================================
-// const MOCK_PRODUCTS = [
-//     { id: 101, id_category: 1, name: "Pizza xl", price: 19.99, description: "Ingredientes: masa, peperoni, butifarra y salsa de la casa", time_preparation: 20, image: "pizza-mock.jpg" },
-//     { id: 102, id_category: 1, name: "Pizza xl", price: 19.99, description: "Ingredientes: masa, peperoni, butifarra y salsa de la casa", time_preparation: 20, image: "pizza-mock.jpg" },
-//     { id: 103, id_category: 1, name: "Pizza xl", price: 19.99, description: "Ingredientes: masa, peperoni, butifarra y salsa de la casa", time_preparation: 20, image: "pizza-mock.jpg" },
-//     { id: 104, id_category: 1, name: "Pizza xl", price: 19.99, description: "Ingredientes: masa, peperoni, butifarra y salsa de la casa", time_preparation: 20, image: "pizza-mock.jpg" },
-//     { id: 105, id_category: 1, name: "Pizza xl", price: 19.99, description: "Ingredientes: masa, peperoni, butifarra y salsa de la casa", time_preparation: 20, image: "pizza-mock.jpg" },
-//     { id: 106, id_category: 1, name: "Pizza xl", price: 19.99, description: "Ingredientes: masa, peperoni, butifarra y salsa de la casa", time_preparation: 20, image: "pizza-mock.jpg" },
-// ];
-// productsData = MOCK_PRODUCTS; 
+const MOCK_PRODUCTS = [
+    { id: 101, id_category: 1, name: "Pizza Margarita", price: 15.50, description: "Clásica masa, tomate, mozzarella y albahaca.", time_preparation: 15, image: "pizza-mock.jpg" },
+    { id: 102, id_category: 1, name: "Pizza Pepperoni", price: 19.99, description: "Ingredientes: masa, pepperoni y salsa de la casa", time_preparation: 20, image: "pizza-mock.jpg" },
+    { id: 103, id_category: 2, name: "Hamburguesa Clásica", price: 12.00, description: "Carne 180g, queso cheddar, lechuga, tomate.", time_preparation: 10, image: "pizza-mock.jpg" },
+    { id: 104, id_category: 3, name: "Pasta Carbonara", price: 14.50, description: "Pasta fresca con salsa de huevo, queso y guanciale.", time_preparation: 18, image: "pizza-mock.jpg" },
+    { id: 105, id_category: 1, name: "Pizza Vegana", price: 17.50, description: "Vegetales frescos de temporada y queso vegano.", time_preparation: 25, image: "pizza-mock.jpg" },
+];
+
 
 // ----------------------------------------------------------------
-// RENDERIZADO DE CATEGORÍAS
+// FUNCIONES DE CONEXIÓN CON LA API (Rutas ajustadas)
+// ----------------------------------------------------------------
+
+/**
+ * Carga las categorías del menú desde la API.
+ */
+async function fetchCategories() {
+    try {
+        // Ajuste de ruta: Se asume un prefijo '/menu/' para probar la solución al 404
+        const response = await api.get('/menu/categories/'); 
+        const apiCategories = response.data.items || response.data; 
+        console.log("✅ Categorías cargadas desde la API.");
+        return apiCategories.map(cat => ({
+            id: cat.id,
+            name: cat.name,
+            active: false
+        }));
+    } catch (error) {
+        console.warn("⚠️ Error al cargar categorías desde la API. Usando datos mock.", error);
+        return MOCK_CATEGORIES; // Fallback
+    }
+}
+
+/**
+ * Carga los productos de una categoría específica desde la API.
+ * @param {number} categoryId - ID de la categoría a cargar.
+ */
+async function fetchProducts(categoryId) {
+    // Ajuste de ruta: Se asume un prefijo '/menu/' para probar la solución al 404
+    let url = `/menu/products/?id_category=${categoryId}`; 
+    
+    try {
+        const response = await api.get(url);
+        const apiProducts = response.data.items || response.data;
+        
+        productsData = apiProducts.map(p => ({
+            id: p.id,
+            id_category: p.id_category,
+            name: p.name,
+            price: p.price,
+            description: p.description,
+            time_preparation: p.time_preparation,
+            image: p.image || 'default.jpg' 
+        }));
+        console.log(`✅ Productos para categoría ${categoryId} cargados desde la API.`);
+    } catch (error) {
+        console.warn(`⚠️ Error al cargar productos desde la API (Cat: ${categoryId}). Usando datos mock.`, error);
+        
+        // Fallback: Filtrar mock data por categoría
+        productsData = MOCK_PRODUCTS.filter(p => p.id_category === categoryId);
+    }
+    renderMenuProducts(productsData);
+}
+
+
+// ----------------------------------------------------------------
+// RENDERIZADO DE CATEGORÍAS (Se mantiene igual)
 // ----------------------------------------------------------------
 
 function renderCategories(categories) {
     categoryButtonsContainer.innerHTML = '';
+    
     categories.forEach(cat => {
         const button = document.createElement('button');
         button.dataset.categoryId = cat.id;
@@ -54,14 +107,10 @@ function renderCategories(categories) {
             cat.active ? 'bg-primary-blue text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
         }`;
         
-        button.addEventListener('click', () => {
-            // Lógica para cambiar la categoría activa y recargar productos
-            // Por ahora, solo simula el cambio visual
-            categories.forEach(c => c.active = (c.id === cat.id));
-            renderCategories(categories);
-            // Simular carga de productos de la nueva categoría:
-            // fetchProducts(cat.id);
-            renderMenuProducts(productsData); // Usamos el mock data fijo
+        button.addEventListener('click', async () => {
+            allCategories.forEach(c => c.active = (c.id === cat.id));
+            renderCategories(allCategories);
+            await fetchProducts(cat.id);
         });
         
         categoryButtonsContainer.appendChild(button);
@@ -70,7 +119,7 @@ function renderCategories(categories) {
 
 
 // ----------------------------------------------------------------
-// RENDERIZADO DE MENÚ (Izquierda) - El mismo código de antes
+// RENDERIZADO DE MENÚ (Izquierda) - Se mantiene igual
 // ----------------------------------------------------------------
 
 function renderMenuProducts(products) {
@@ -82,13 +131,12 @@ function renderMenuProducts(products) {
     }
 
     products.forEach(product => {
-        // Inicializar la cantidad actual del producto en 0
-        const initialQuantity = 0; 
+        const currentItemInOrder = currentOrder.find(item => item.id_product === product.id && item.note === null);
+        const initialQuantity = currentItemInOrder ? currentItemInOrder.quantity : 0;
         
         const card = document.createElement("div");
         card.className = "bg-white border rounded-xl shadow-sm p-4 flex flex-col";
         
-        // La imagen debe estar en la carpeta ../assets/img/
         card.innerHTML = `
             <img src="../assets/img/${product.image}" alt="${product.name}" 
                  class="rounded-lg h-32 w-full object-cover mb-3 ">
@@ -122,14 +170,12 @@ function renderMenuProducts(products) {
 
 
 // ----------------------------------------------------------------
-// RENDERIZADO DE COMANDA (Derecha) - Ajuste para mostrar la imagen
+// RENDERIZADO DE COMANDA (Derecha) - Se mantiene igual
 // ----------------------------------------------------------------
 
 function renderComanda() {
     comandaTitle.textContent = `COMANDA #${ACTIVE_TABLE_ID} - ${ACTIVE_TABLE_NAME}`;
     comandaList.innerHTML = "";
-    
-    // ... (El resto del control de estado y botones se mantiene igual)
 
     if (currentOrder.length === 0) {
         comandaList.innerHTML = '<p class="text-center text-gray-500 italic p-4">La comanda está vacía.</p>';
@@ -141,8 +187,8 @@ function renderComanda() {
     enviarPedidoBtn.disabled = false;
     enviarPedidoBtn.classList.remove('opacity-50', 'cursor-not-allowed');
 
-    currentOrder.forEach(item => {
-        const product = productsData.find(p => p.id === item.id_product) || { image: 'default.jpg' };
+    currentOrder.forEach((item, index) => {
+        const product = productsData.find(p => p.id === item.id_product) || MOCK_PRODUCTS.find(p => p.id === item.id_product) || { image: 'default.jpg' };
         
         const comandaItem = document.createElement("div");
         comandaItem.className = "flex items-start justify-between border-b pb-2 mb-2 last:border-b-0 last:mb-0";
@@ -152,12 +198,12 @@ function renderComanda() {
                 <img src="../assets/img/${product.image}" alt="${item.name}" class="rounded-lg w-12 h-12 object-cover flex-shrink-0">
                 <div class="flex-1 min-w-0">
                     <p class="font-medium text-sm text-gray-900 truncate">${item.name}</p>
-                    <p class="text-xs text-gray-500 mt-1">nota: <span class="text-gray-700">${item.note || 'ninguna'}</span></p>
+                    <p class="text-xs text-gray-500 mt-1">Nota: <span class="text-gray-700">${item.note || 'ninguna'}</span></p>
                 </div>
                 <div class="text-right flex-shrink-0">
                     <p class="font-medium text-sm">Cant: ${item.quantity}</p>
-                    <button data-id-product="${item.id_product}" data-action="remove-item" 
-                            class="text-xs text-red-500 hover:text-red-700 transition hidden">Quitar</button>
+                    <button data-index="${index}" data-action="remove-item" 
+                            class="text-xs text-red-500 hover:text-red-700 transition">Quitar</button>
                 </div>
             </div>
         `;
@@ -170,8 +216,9 @@ function renderComanda() {
     });
 }
 
+
 // ----------------------------------------------------------------
-// MANEJO DE ACCIONES (Actualizado para deshabilitar botón en 0)
+// MANEJO DE ACCIONES (Se mantiene igual)
 // ----------------------------------------------------------------
 
 function handleMenuAction(event) {
@@ -189,11 +236,10 @@ function handleMenuAction(event) {
         currentQuantity--;
     } else if (action === 'add-to-order' && currentQuantity > 0) {
         const product = productsData.find(p => p.id === productId);
-        const note = prompt(`Añadir nota para ${product.name} (opcional):`);
+        const note = prompt(`Añadir nota para ${product.name} (opcional):`); 
         
         addItemToOrder(productId, product.name, currentQuantity, note);
         
-        // Resetear el contador y deshabilitar el botón de disminuir
         currentQuantity = 0;
     }
     
@@ -207,18 +253,14 @@ function handleMenuAction(event) {
     }
 }
 
-// ... (El resto de las funciones addItemToOrder, handleComandaAction, sendOrder se mantienen igual)
 function addItemToOrder(productId, productName, quantity, note) {
-    // Buscar si el producto ya existe en la comanda (por ID y NOTA para pedidos especiales)
     const existingItemIndex = currentOrder.findIndex(item => 
-        item.id_product === productId && item.note === note
+        item.id_product === productId && (item.note || '') === (note || '')
     );
     
     if (existingItemIndex > -1) {
-        // Actualizar cantidad si existe
         currentOrder[existingItemIndex].quantity += quantity;
     } else {
-        // Agregar nuevo ítem
         currentOrder.push({
             id_product: productId,
             name: productName,
@@ -232,18 +274,24 @@ function addItemToOrder(productId, productName, quantity, note) {
 
 function handleComandaAction(event) {
     const button = event.currentTarget;
-    const productId = parseInt(button.dataset.idProduct);
+    const indexToRemove = parseInt(button.dataset.index); 
     
-    currentOrder = currentOrder.filter(item => item.id_product !== productId);
+    currentOrder.splice(indexToRemove, 1);
     
     renderComanda();
 }
 
+/**
+ * Función para enviar la comanda completa a la API.
+ */
 async function sendOrder() {
     if (currentOrder.length === 0) {
         alert("La comanda está vacía. Agregue productos antes de enviar.");
         return;
     }
+    
+    enviarPedidoBtn.disabled = true;
+    enviarPedidoBtn.textContent = 'Enviando...';
     
     const orderPayload = {
         id_table: ACTIVE_TABLE_ID,
@@ -254,13 +302,13 @@ async function sendOrder() {
         }))
     };
     
-    console.log("Payload de Pedido a enviar:", orderPayload);
-    
     try {
-        // await api.post('/orders/', orderPayload); 
+        // La ruta /orders/ se asume correcta, ajusta si es necesario.
+        const response = await api.post('/orders/', orderPayload); 
         
-        alert(`Pedido para ${ACTIVE_TABLE_NAME} enviado con éxito. Ítems: ${currentOrder.length}`);
+        alert(`Pedido #${response.data.order_id || 'N/A'} para ${ACTIVE_TABLE_NAME} enviado con éxito.`);
         
+        // Limpieza de UI
         currentOrder = [];
         renderComanda();
         document.querySelectorAll('[id^="quantity-"]').forEach(span => span.textContent = 0);
@@ -270,8 +318,12 @@ async function sendOrder() {
         });
 
     } catch (error) {
+        // Muestra el detalle del error 401/404/500
         console.error("Error al enviar el pedido:", error.response ? error.response.data : error.message);
-        alert("Error al enviar el pedido. Consulte la consola.");
+        alert(`Error al enviar el pedido. Detalle: ${error.response ? (error.response.data.detail || JSON.stringify(error.response.data)) : error.message}`);
+    } finally {
+        enviarPedidoBtn.disabled = false;
+        enviarPedidoBtn.textContent = 'Enviar pedido';
     }
 }
 
@@ -280,14 +332,23 @@ async function sendOrder() {
 // INICIALIZACIÓN
 // ----------------------------------------------------------------
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Cargar categorías y productos
-    renderCategories(MOCK_CATEGORIES);
-    renderMenuProducts(productsData);
+document.addEventListener('DOMContentLoaded', async () => {
     
-    // 2. Inicializar la comanda (Vacía)
+    const categories = await fetchCategories();
+    allCategories = categories; 
+    
+    if (allCategories.length > 0) {
+        allCategories[0].active = true;
+        renderCategories(allCategories);
+        
+        // Carga los productos de la primera categoría al inicio
+        await fetchProducts(allCategories[0].id);
+    } else {
+        renderCategories([]);
+        renderMenuProducts([]);
+    }
+    
     renderComanda(); 
     
-    // 3. Asignar evento al botón de envío
     enviarPedidoBtn.addEventListener('click', sendOrder);
 });
