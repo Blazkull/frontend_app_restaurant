@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Luna - Mapa de Mesas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/src/Menu/style.css">
+</head>
+<body class="bg-gray-50">
+    
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col h-full transition-all duration-300 -ml-64">
+            <!-- Logo -->
+            <div class="flex items-center gap-2 p-4 border-b border-gray-200">
+                <div class="w-8 h-8 bg-primary bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.5 17H2.83333C3.66176 17 4.33333 16.3284 4.33333 15.5V8.35156C4.33333 7.52314 3.66176 6.85156 2.83333 6.85156H2.5C1.67157 6.85156 1 7.52314 1 8.35156V15.5C1 16.3284 1.67157 17 2.5 17Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.83301 16.9991H9.16634C9.99477 16.9991 10.6663 16.3275 10.6663 15.4991V2.5C10.6663 1.67157 9.99477 1 9.16634 1H8.83301C8.00458 1 7.33301 1.67157 7.33301 2.5V15.4991C7.33301 16.3275 8.00458 16.9991 8.83301 16.9991Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.166 17H15.4993C16.3278 17 16.9993 16.3284 16.9993 15.5V11.9218C16.9993 11.0934 16.3278 10.4218 15.4993 10.4218H15.166C14.3376 10.4218 13.666 11.0934 13.666 11.9218V15.5C13.666 16.3284 14.3376 17 15.166 17Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                </div>
+                <span class="font-semibold text-lg">Media Luna</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto p-4">
+                <ul class="space-y-2">
+                     <li>
+                        <a href="/src/Mesa/Mesas.html" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 4.75H14.75L12.777 9.13445C12.6008 9.52591 12.6008 9.97409 12.777 10.3655L14.75 14.75H9.5C8.67157 14.75 8 14.0784 8 13.25V12.5M1.25 12.5H8M1.25 2.5H6.5C7.32843 2.5 8 3.17157 8 4V12.5M1.25 19.25V0.75" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Mesas</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-black-700  hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                     <svg width="21" height="18" viewBox="0 0 21 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.31641 0.75H2.49696C3.24468 0.75 3.87822 1.30068 3.98234 2.04112L4.13429 3.12161M4.13429 3.12161L5.23641 10.9589C5.34053 11.6993 5.97407 12.25 6.72179 12.25L16.0833 12.25C16.6803 12.25 17.2205 11.896 17.4587 11.3486L20.126 5.22023C20.5572 4.2295 19.8312 3.12161 18.7507 3.12161H4.13429Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M6.7832 16.25H6.7932M15.3203 16.25H15.3303" stroke="#344054" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                            <span>Pedidos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/src/Menu/Menú.html" class=" flex items-center gap-3 px-4 py-3 text-black-700  hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 2.75V4.5M16 2.75V4.5M4 9H20M5.5 20.5H18.5C19.3284 20.5 20 19.8284 20 19V6C20 5.17157 19.3284 4.5 18.5 4.5H5.5C4.67157 4.5 4 5.17157 4 6V19C4 19.8284 4.67157 20.5 5.5 20.5Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Menú</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+             <!-- Cerrar sesión-->
+            <div>
+                <div class="flex items-center gap-3">
+                 <div class="p-6 bg-white border-t border-gray-200">
+                <button class="w-full bg-[#465FFF] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#3A4FE6] transition-colors flex items-center justify-center gap-2">
+                    Cerrar sesión
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden transition-all duration-300" id="mainContent">
+            
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+            <button class="menuToggle cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 6L20 6M4 18L20 18M4 12L12 12" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+                    <h1 class="text-2xl font-bold text-gray-800">Mapa de Mesas</h1>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary  flex items-center justify-center text-white content-color  border-white  font-semibold bg-[#465FFF] rounded-full">
+                            US
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">Usuario</span>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Mesas Grid -->
+            <main class="flex-1 overflow-y-auto p-6">
+                <div id="mesasGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Las mesas se cargarán aquí con JavaScript -->
+                </div>
+            </main>
+
+        </div>
+
+    </div>
+
+    <script type="module" src="/src/Mesa/Mesas.js"></script>
+</body>
+</html>
