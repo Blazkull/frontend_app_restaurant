@@ -60,19 +60,19 @@ function showAlert({
     const config = {
         success: {
             bg: "bg-green-100",
-            icon: "src/svg/check-mark-ceircle_green.svg"
+            icon: "../svg/check-mark-ceircle_green.svg"
         },
         error: {
             bg: "bg-red-100",
-            icon: "src/svg/close_red.svg"
+            icon: "../svg/close_red.svg"
         },
         info: {
             bg: "bg-blue-100",
-            icon: "src/svg/info_blue.svg"
+            icon: "../svg/info_blue.svg"
         },
         confirm: {
             bg: "bg-indigo-100",
-            icon: ".src/svg/info_blue.svg"
+            icon: "../svg/info_blue.svg"
         }
     };
 
