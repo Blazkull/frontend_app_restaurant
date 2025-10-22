@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clientes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#4c6fff', // Color principal para botones y acentos
+                        // Nuevos colores personalizados
+                        'input-border': '#D0D5DD', // Color para el borde de los inputs
+                        'label-text': '#344054',   // Color para los labels
+                    }
+                }
+            },
+            // Configuración para aplicar estilos a placeholders
+            plugins: [
+                function ({ addUtilities }) {
+                    addUtilities({
+                        '.placeholder-input-border::placeholder': {
+                            color: '#D0D5DD',
+                        },
+                    }, ['responsive', 'focus'])
+                }
+            ]
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 antialiased font-sans">
+    <div class="flex min-h-screen">
+        <div id="sidebar"></div>
+
+        <!-- Topbar -->
+        <div id="topbar"
+            class="fixed top-0 left-64 right-0 z-50 bg-white shadow-sm h-16 flex items-center px-6 border-b border-gray-100">
+        </div>
+
+        <main class="ml-64 flex-1 flex flex-col mt-16">
+
+            <div id="content" class="p-6">
+
+                <main class="flex-1 p-6 bg-white rounded-xl shadow-lg">
+                    <header class="mb-6">
+                        <h1 class="text-2xl font-bold border-b pb-2">Lista de Clientes</h1>
+                        <p class="text-sm text-gray-500 mt-1">Home > Clientes</p>
+                    </header>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <span class="text-sm text-gray-600 mr-2">Ver</span>
+                                <select
+                                    class="border border-gray-300 rounded-lg p-1.5 text-sm focus:ring-primary-blue focus:border-primary-blue"
+                                    id="items-per-page">
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div class="relative">
+                                <!-- Campo de búsqueda -->
+                                <input type="text" placeholder="Search..."
+                                    class="pl-10 pr-4 py-1.5 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue placeholder-input-border"
+                                    id="search-input">
+                                <svg data-lucide="search"
+                                    class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></svg>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="flex items-center space-x-3">
+                            <!-- Botón Mostrar Eliminados -->
+                            <button id="toggleDeletedBtn"
+                                class="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 shadow-md border border-gray-300">
+                                <svg data-lucide="archive-restore" class="w-5 h-5 mr-2"></svg>
+                                Mostrar Eliminados
+                            </button>
+
+                            <!-- Botón Crear Cliente -->
+                            <button id="crear-cliente-btn"
+                                class="flex items-center px-4 py-2 bg-primary-blue text-white rounded-xl font-medium hover:bg-blue-700 shadow-md">
+                                <svg data-lucide="plus" class="w-5 h-5 mr-2"></svg>
+                                Crear Cliente
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto border border-gray-200 rounded-xl">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left">
+                                        <div class="flex items-center">
+                                            Nombre Cliente
+                                            <svg data-lucide="arrow-down-up" class="w-3 h-3 ml-1 cursor-pointer"></svg>
+                                        </div>
+                                    </th>
+                                    <th class="px-6 py-3 text-left">Dirección</th>
+                                    <th class="px-6 py-3 text-left">Correo</th>
+                                    <th class="px-6 py-3 text-left">Cédula</th>
+                                    <th class="px-6 py-3 text-left">Teléfono</th>
+                                    <th class="px-6 py-3 text-left">Actualizado</th>
+                                    <th class="px-6 py-3 text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientes-table-body" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="pagination-footer" class="flex justify-between items-center mt-4">
+                        <p class="text-sm text-gray-600">Mostrando 1 - 10 de <span id="total-datos">37</span> Datos
+                        </p>
+                        <div class="flex items-center space-x-2" id="pagination-controls">
+                            <button
+                                class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">Previo</button>
+                            <span class="px-3 py-1 text-sm bg-primary-blue text-white rounded-lg">1</span>
+                            <button
+                                class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">2</button>
+                            <button
+                                class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">Siguiente</button>
+                        </div>
+                    </div>
+
+                </main>
+            </div>
+        </main>
+    </div>
+
+    <div id="createClientModal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-all duration-300 opacity-0"
+        aria-labelledby="createClientModalLabel" aria-hidden="true">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full m-4 transform transition-all duration-300 scale-95">
+
+            <div class="px-6 py-4 border-b flex justify-between items-center">
+                <h5 class="text-xl font-semibold text-gray-800" id="createClientModalLabel">Crear Cliente</h5>
+                <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg data-lucide="x" class="w-6 h-6"></svg>
+                </button>
+            </div>
+
+            <div class="p-6">
+                <form id="createClientForm" class="space-y-4">
+
+                    <div>
+                        <label for="fullname" class="block text-sm font-medium text-label-text mb-1">Nombre
+                            completo</label>
+                        <input type="text" id="fullname" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                    </div>
+
+                    <div>
+                        <label for="identification_number" class="block text-sm font-medium text-label-text mb-1">Número
+                            de identificación</label>
+                        <input type="text" id="identification_number" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                    </div>
+
+                    <div>
+                        <label for="id_type_identificacion" class="block text-sm font-medium text-label-text mb-1">Tipo
+                            de identificación</label>
+                        <select id="id_type_identificacion" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                            <option value="1">Cédula de Ciudadanía</option>
+                            <option value="2">NIT</option>
+                            <option value="3">Cédula de Extranjería</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="phone_number"
+                            class="block text-sm font-medium text-label-text mb-1">Teléfono</label>
+                        <input type="text" id="phone_number" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-label-text mb-1">Correo
+                            electrónico</label>
+                        <input type="email" id="email" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                    </div>
+
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-label-text mb-1">Dirección</label>
+                        <input type="text" id="address" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit"
+                            class="w-full px-4 py-2 bg-primary-blue text-white rounded-xl font-medium hover:bg-blue-700 shadow-md transition duration-150">
+                            Guardar Cliente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="editClientModal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-all duration-300 opacity-0"
+        aria-labelledby="editClientModalLabel" aria-hidden="true">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full m-4 transform transition-all duration-300 scale-95">
+
+            <div class="px-6 py-4 border-b flex justify-between items-center">
+                <h5 class="text-xl font-semibold text-gray-800" id="editClientModalLabel">Editar Cliente</h5>
+                <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg data-lucide="x" class="w-6 h-6"></svg>
+                </button>
+            </div>
+
+            <div class="p-6">
+                <form id="editClientForm" class="space-y-4">
+                    <input type="hidden" id="edit_id" value="">
+
+                    <div>
+                        <label for="edit_fullname" class="block text-sm font-medium text-label-text mb-1">Nombre
+                            completo</label>
+                        <input type="text" id="edit_fullname" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                    </div>
+
+                    <div>
+                        <label for="edit_identification_number"
+                            class="block text-sm font-medium text-label-text mb-1">Número de identificación</label>
+                        <input type="text" id="edit_identification_number" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                    </div>
+
+                    <div>
+                        <label for="edit_id_type_identificacion"
+                            class="block text-sm font-medium text-label-text mb-1">Tipo de identificación</label>
+                        <select id="edit_id_type_identificacion" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                            <option value="1">Cédula de Ciudadanía</option>
+                            <option value="2">NIT</option>
+                            <option value="3">Cédula de Extranjería</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="edit_phone_number"
+                            class="block text-sm font-medium text-label-text mb-1">Teléfono</label>
+                        <input type="text" id="edit_phone_number" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                    </div>
+
+                    <div>
+                        <label for="edit_email" class="block text-sm font-medium text-label-text mb-1">Correo
+                            electrónico</label>
+                        <input type="email" id="edit_email" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                    </div>
+
+                    <div>
+                        <label for="edit_address"
+                            class="block text-sm font-medium text-label-text mb-1">Dirección</label>
+                        <input type="text" id="edit_address" required
+                            class="w-full px-3 py-2 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue">
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit"
+                            class="w-full px-4 py-2 bg-blue-600 text-white rounded-xl font-medium shadow-md hover:bg-blue-700 transition duration-150">
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Logout -->
+    <div id="logoutModal"
+        class="hidden fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+        <div
+            class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 text-center transform scale-95 opacity-0 transition-all duration-300">
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">¿Estas seguro de salir?</h2>
+            <p class="text-gray-500 text-sm mb-6">
+                Si cierras sesión perderás el acceso inmediato al sistema y deberás ingresar nuevamente.
+            </p>
+            <div class="flex justify-center gap-4">
+                <button id="cancelLogout"
+                    class="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition">
+                    Cerrar
+                </button>
+                <button id="confirmLogout"
+                    class="px-6 py-2 rounded-xl bg-indigo-600 text-white font-medium shadow-md hover:bg-indigo-700 transition">
+                    Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="../components/components.js"></script>
+    <script type="module" src="./clientes.js"></script>
+    <script>
+        if (typeof initComponents === "function") {
+            initComponents(); // Carga navbar y sidebar
+        }
+        lucide.createIcons(); // Activa íconos iniciales
+    </script>
+
+</body>
+
+</html>
