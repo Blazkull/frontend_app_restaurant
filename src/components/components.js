@@ -15,36 +15,36 @@ function renderSidebar(containerId) {
                 </div>
 
                 <nav class="flex flex-col gap-1 mt-4 px-2">
-                    <a href="src/dashboard/dashboard.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="src/svg/bars.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                    <a href="../dashboard/dashboard.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/bars.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Dashboard
                     </a>
-                    <a href="src/pedidos/pedidos.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="src/svg/car.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                    <a href="../pedidos/pedidos.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/car.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Pedidos
                     </a>
-                    <a href="src/menu/menu.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="src/svg/calendar.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                    <a href="../menu/menu.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/calendar.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Menú
                     </a>
-                    <a href="src/mesas/mesas.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="src/svg/flag.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                    <a href=../mesas/mesas.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/flag.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Mesas
                     </a>
-                    <a href="src/clientes/clientes.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="src/svg/clients.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                    <a href="../clientes/clientes.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/clients.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Clientes
                     </a>
-                    <a href="src/usuarios/usuarios.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="src/svg/user.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                    <a href="../usuarios/usuarios.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/user.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Usuarios
                     </a>
-                    <a href="src/reportes/reportes.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="src/svg/reportes.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                    <a href="../reportes/reportes.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/reportes.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Reportes
                     </a>
-                    <a href="src/facturacion/invoices.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="src/svg/ticket.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                    <a href="../facturacion/invoices.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/ticket.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Facturacion
                     </a>
 
@@ -54,7 +54,7 @@ function renderSidebar(containerId) {
             <div class="p-4">
                 <button id="sidebarLogout" class="flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg w-full font-medium hover:bg-indigo-700 transition shadow-md">
                 Cerrar Sesión
-                <img src="src/svg/exit.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                <img src="../svg/exit.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                 </button>
             </div>
         </div>
