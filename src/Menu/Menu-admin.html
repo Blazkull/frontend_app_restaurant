@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TailAdmin - Lista del Menú</title>
+     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/src/Menu/style.css">
+</head>
+<body class="bg-gray-50">
+    
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col h-full transition-all duration-300 -ml-64">
+            
+            <!-- Logo -->
+            <div class="flex items-center gap-2 p-4 border-b border-gray-200">
+                <div class="w-8 h-8 bg-primary bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.5 17H2.83333C3.66176 17 4.33333 16.3284 4.33333 15.5V8.35156C4.33333 7.52314 3.66176 6.85156 2.83333 6.85156H2.5C1.67157 6.85156 1 7.52314 1 8.35156V15.5C1 16.3284 1.67157 17 2.5 17Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.83301 16.9991H9.16634C9.99477 16.9991 10.6663 16.3275 10.6663 15.4991V2.5C10.6663 1.67157 9.99477 1 9.16634 1H8.83301C8.00458 1 7.33301 1.67157 7.33301 2.5V15.4991C7.33301 16.3275 8.00458 16.9991 8.83301 16.9991Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15.166 17H15.4993C16.3278 17 16.9993 16.3284 16.9993 15.5V11.9218C16.9993 11.0934 16.3278 10.4218 15.4993 10.4218H15.166C14.3376 10.4218 13.666 11.0934 13.666 11.9218V15.5C13.666 16.3284 14.3376 17 15.166 17Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                </div>
+                <span class="font-semibold text-lg">Media Luna</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.5 17H2.83333C3.66176 17 4.33333 16.3284 4.33333 15.5V8.35156C4.33333 7.52314 3.66176 6.85156 2.83333 6.85156H2.5C1.67157 6.85156 1 7.52314 1 8.35156V15.5C1 16.3284 1.67157 17 2.5 17Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.83301 16.9991H9.16634C9.99477 16.9991 10.6663 16.3275 10.6663 15.4991V2.5C10.6663 1.67157 9.99477 1 9.16634 1H8.83301C8.00458 1 7.33301 1.67157 7.33301 2.5V15.4991C7.33301 16.3275 8.00458 16.9991 8.83301 16.9991Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.166 17H15.4993C16.3278 17 16.9993 16.3284 16.9993 15.5V11.9218C16.9993 11.0934 16.3278 10.4218 15.4993 10.4218H15.166C14.3376 10.4218 13.666 11.0934 13.666 11.9218V15.5C13.666 16.3284 14.3376 17 15.166 17Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span>Pedidos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/src/Menu/Menú.html" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 bg-primary rounded-lg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 2.75V4.5M16 2.75V4.5M4 9H20M5.5 20.5H18.5C19.3284 20.5 20 19.8284 20 19V6C20 5.17157 19.3284 4.5 18.5 4.5H5.5C4.67157 4.5 4 5.17157 4 6V19C4 19.8284 4.67157 20.5 5.5 20.5Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                        <span>Menú</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/src/Mesa/Mesas.html" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 4.75H14.75L12.777 9.13445C12.6008 9.52591 12.6008 9.97409 12.777 10.3655L14.75 14.75H9.5C8.67157 14.75 8 14.0784 8 13.25V12.5M1.25 12.5H8M1.25 2.5H6.5C7.32843 2.5 8 3.17157 8 4V12.5M1.25 19.25V0.75" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                            <span>Mesas</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.109 1.10414C12.4743 0.941781 12.8789 0.851562 13.3045 0.851562C14.932 0.851562 16.2514 2.17095 16.2514 3.79851C16.2514 5.42606 14.932 6.74545 13.3045 6.74545C12.8794 6.74545 12.4753 6.65545 12.1103 6.49346M13.797 9.22074C17.5989 9.44528 18.821 12.009 19.2134 13.6906C19.3993 14.4875 18.7424 15.1487 17.9241 15.1487H15.59M9.75121 3.79855C9.75121 5.4261 8.43182 6.74549 6.80427 6.74549C5.17671 6.74549 3.85732 5.4261 3.85732 3.79855C3.85732 2.171 5.17671 0.851604 6.80427 0.851604C8.43182 0.851604 9.75121 2.171 9.75121 3.79855ZM6.74941 9.20495C10.9833 9.20495 12.3026 11.9309 12.7132 13.6906C12.8991 14.4875 12.2422 15.1487 11.4239 15.1487H2.07489C1.25661 15.1487 0.599726 14.4875 0.785649 13.6906C1.19623 11.9309 2.51554 9.20495 6.74941 9.20495Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                            <span>Clientes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <span>Usuarios</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.6661 11.3333V13.4167C14.6661 14.107 14.1064 14.6667 13.4161 14.6667H2.58203C1.89168 14.6667 1.33203 14.107 1.33203 13.4167V11.3333M8.00035 11.3333L8.00035 1.33334M4.14456 7.47951L7.9986 11.3311L11.8529 7.47951" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                            <span>Reportes</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Cerrar sesión-->
+            <div>
+                <div class="flex items-center gap-3">
+                 <div class="p-6 bg-white border-t border-gray-200">
+                <button  id="sidebarLogout" class="w-full bg-[#465FFF] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#3A4FE6] transition-colors flex items-center justify-center gap-2">
+                    Cerrar sesión
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </button>
+                </div>
+
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <button class="menuToggle cursor-pointer">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 6L20 6M4 18L20 18M4 12L12 12" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>  
+                        </button>
+                        
+                    </div>
+                    
+                     <!--User profile-->
+                    <div class="flex items-center gap-2">
+                        <div class="">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary  flex items-center justify-center text-white content-color border border-white  font-semibold bg-[#465FFF] rounded-full">
+                        US
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium">Jhoan Acosta</p>
+                        <p class="text-xs text-gray-500">Admin</p>
+                    </div>
+                </div>
+                    
+                <!-- User navigation -->
+                <div class="flex items-center gap-2 text-gray-500 mt-5">
+                        <span class="text-sm text-gray-500">Home</span>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-gray-900">Menu</span>
+                        
+                    </div>
+                </div>
+                
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+
+                <h1 class="text-2xl font-bold text-gray-800">Menu</h1>
+                 <!-- Breadcrumb -->
+                <div class="flex items-center gap-2 text-sm mb-6">
+                    
+                </div>
+
+                    <!-- Table -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+
+                    <!-- Header Section -->
+                <div class="bg-white rounded-lg p-6 mb-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900 mb-1">Lista del menu</h2>
+                            <p class="text-sm text-gray-500">Vista general de productos del menú del restaurante</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="exportarCSV()" class="cursor-pointer flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                <span class="text-sm font-medium text-gray-700">Exportar</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                            </button>
+                            <button  onclick="abrirModal()" class="cursor-pointer w-full bg-[#465FFF] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#3A4FE6] transition-colors flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                <span class="text-sm font-semibold">Crear producto</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1 relative">
+                            <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <input 
+                                id="buscarProducto"
+                                type="text" 
+                                placeholder="Buscar..." 
+                                class="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary w-70 bg-white shadow-sm"
+                            />
+                        </div>
+                        <div class="relative">
+                            <div class="relative">
+                                <button id="filterButton" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M13.6547 3.90417C13.6547 2.48436 12.5037 1.33334 11.0839 1.33334C9.66403 1.33334 8.51304 2.48436 8.51302 3.90418M13.6547 3.90417C13.6547 5.32401 12.5037 6.47501 11.0839 6.47501C9.66402 6.47501 8.51302 5.32401 8.51302 3.90418M13.6547 3.90417L16.7096 3.90414M8.51302 3.90418L1.29297 3.90414M4.34792 12.0958C4.34792 10.676 5.49892 9.52501 6.91875 9.52501C8.33858 9.52501 9.48958 10.676 9.48958 12.0958M4.34792 12.0958C4.34792 13.5157 5.49892 14.6667 6.91875 14.6667C8.33858 14.6667 9.48958 13.5157 9.48958 12.0958M4.34792 12.0958L1.29297 12.0958M9.48958 12.0958L16.7096 12.0958" stroke="#344054" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700">Filtro</span>
+                                </button>
+                                
+                                <!-- Dropdown menu -->
+                                <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10 border border-gray-200">
+                                    <div class="py-2">
+                                        <button onclick="aplicarFiltro('nombre')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Nombre</button>
+                                        <button onclick="aplicarFiltro('categoria')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Categoría</button>
+                                        <button onclick="aplicarFiltro('tiempo')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Tiempo</button>
+                                        <button onclick="aplicarFiltro('precio')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Precio</button>
+                                        <button onclick="aplicarFiltro('estado')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Estado</button>
+                                        <button onclick="aplicarFiltro('fecha')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">Fecha</button>
+                                        <div class="border-t border-gray-100 my-2"></div>
+                                        <button onclick="limpiarFiltros()" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                            Limpiar filtros
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            </button>
+                            
+                            <div id="filterMenu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
+                                <div class="px-4 py-2 border-b border-gray-100">
+                                    <h3 class="text-sm font-semibold text-gray-900">Filtrar por</h3>
+                                </div>
+                                <div class="py-2">
+                                    <button onclick="aplicarFiltro('nombre')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                                        Nombre
+                                    </button>
+                                    <button onclick="aplicarFiltro('categoria')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                                        Categoría
+                                    </button>
+                                    <button onclick="aplicarFiltro('tiempo')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                                        Tiempo
+                                    </button>
+                                    <button onclick="aplicarFiltro('precio')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                                        Precio
+                                    </button>
+                                    <button onclick="aplicarFiltro('estado')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                                        Estado
+                                    </button>
+                                    <button onclick="aplicarFiltro('fecha')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                                        Fecha de Creación
+                                    </button>
+                                    <div class="border-t border-gray-100 mt-2 pt-2">
+                                        <button onclick="limpiarFiltros()" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                            Limpiar filtros
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <table class="w-full">
+                        <thead class="bg-white border-b border-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left">
+                                        <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" />
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Imagen</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        <button onclick="ordenarPor('categoria')" class=" cursor-pointer flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Producto
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        <button onclick="ordenarPor('categoria')" class="cursor-pointer flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Categoría
+                                            <svg id="icon-cliente" class="w-3 h-3 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                       <button onclick="ordenarPor('tiempo')" class="cursor-pointer flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Tiempo
+                                            <svg id="icon-tiempo" class="w-3 h-3 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        <button onclick="ordenarPor('precio')" class="cursor-pointer flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Precio
+                                            <svg id="icon-precio" class="w-3 h-3 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        <button onclick="ordenarPor('fecha')" class="cursor-pointer flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Creado
+                                            <svg id="icon-fecha" class="w-3 h-3 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                        <div class="flex items-center gap-1">
+                                            Acciones
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="menuTableBody" class="divide-y divide-gray-100"></tbody>
+                                <!-- Los productos se cargarán aquí con JavaScript -->
+                            </tbody>
+                        </table>
+
+                    
+                    <!-- Pagination -->
+<div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+                        <p class="text-sm text-gray-600">
+                            Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">1000</span>
+                        </p>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.33398 9.99715L16.6685 9.99715M8.33064 5L3.33399 9.99984L8.33064 15" stroke="#344054" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                            </button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">1</button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">2</button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">3</button>
+                            <span class="px-4 py-2">...</span>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">8</button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">9</button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">10</button>
+                            <button class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.6685 9.99715L3.33398 9.99715M11.6718 5L16.6685 9.99984L11.6718 15" stroke="#344054" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+        </div>
+
+    </div>
+
+<!-- Modal Crear Producto -->
+<div id="modalCrearProducto" class="hidden fixed inset-0 backdrop-blur-sm bg-gray-900/20 z-50 overflow-y-auto">
+    <div class="flex min-h-screen items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <!-- El resto del contenido del modal aquí... -->
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h3 id="modalTitle" class="font-bold text-gray-900">Editor de producto</h3>
+            <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <form id="formCrearProducto" class="p-6 space-y-4">
+            <!-- Nombre -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                <input 
+                    type="text" 
+                    id="productoNombre"
+                    placeholder="Nombre de producto"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    required
+                />
+            </div>
+
+            <!-- Precio -->
+           <div>
+  <label class="block text-sm font-medium text-gray-700 mb-1">Precio</label>
+  <div class="relative">
+    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+    <input 
+      type="text" 
+      id="productoPrecio"
+      placeholder="500,000"
+      class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+      required
+    />
+  </div>
+</div>
+
+            <!-- Categoría y Estado -->
+             <div> 
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                    <select 
+                        id="productoCategoria"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg  focus:border-transparent bg-white padding-right-2rem pr-8 bg-[position:right_0.5rem_center] bg-no-repeat bg-[length:1rem]"
+                        required
+                    >
+                        <option value="seleccionar">Seleccionar</option>
+                        <option value="1">Pizzas</option>
+                        <option value="2">Bebidas</option>
+                        <option value="3">Asados</option>
+                        <option value="4">Hamburguesas</option>
+                        <option value="5">Postres</option>
+                        <option value="6">Pastas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1 mask-origin-padding">Estado</label>
+                    <select 
+                        id="productoEstado"
+                        class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        required
+                    >
+                        <option  value="">Seleccionar</option>
+                        <option value="disponible">Disponible</option>
+                        <option value="desactivado">Desactivado</option>
+                    </select>
+                </div>
+            </div>
+            </div>
+            
+            <!-- Imagen del producto -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Imagen del producto</label>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-semibold text-gray-700 mb-1">Cargar archivo aquí</p>
+                        <p class="text-xs text-gray-500 mb-3">Arrastra y suelta tus imágenes PNG, JPG, WebP, SVG aquí o explora</p>
+                        <input type="file" id="productoImagen" accept="image/*" class="hidden" />
+                        <button type="button" onclick="document.getElementById('productoImagen').click()" class="text-sm text-primary font-medium hover:underline ">
+                            Examinar archivo
+                        </button>
+                        <div id="imagenPreview" class="mt-4 hidden">
+                            <img id="imagenPreviewImg" class="w-full h-32 object-cover rounded-lg" />
+                        </div>
+                    </div>
+                </div>
+            
+            </div>
+            <!-- Buttons -->
+            <div class="flex gap-3 pt-4">
+                <button 
+                        id="submitBtn"
+                        type="submit"
+                        class="flex-1 bg-[#465FFF] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#3A4FE6] transition-colors"
+                    >
+                        Actualizar
+                    </button>
+                <button 
+                    type="button"
+                    onclick="cerrarModal()"
+                    class="flex-1 items-right justify-right gap-2 bg-gray-200 text-gray-700 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                >
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+               <!-- MODAL LOGOUT -->
+  <div id="modalCerrarSesion"
+    class="hidden fixed inset-0 items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+    <div
+      class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 text-center transform scale-95 opacity-0 transition-all duration-300">
+      <h2 class="text-2xl font-bold text-gray-800 mb-3">¿Estás seguro de salir?</h2>
+      <p class="text-gray-500 text-sm mb-6">
+        Si cierras sesión perderás el acceso inmediato al sistema y deberás ingresar nuevamente.
+      </p>
+      <div class="flex justify-center gap-4">
+        <button id="cancelLogout"
+          class="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition">
+          Cerrar
+        </button>
+        <button id="confirmLogout"
+          class="px-6 py-2 rounded-xl bg-blue-600 text-white font-medium shadow-md hover:bg-blue-700 transition">
+          Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+
+<!-- Axios CDN -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<!-- Tu script -->
+
+<script  src="../Menu/Menu-admin.js"></script>
+
+</body>
+</html>
