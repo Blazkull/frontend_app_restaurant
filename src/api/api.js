@@ -3,7 +3,7 @@
 // ======================================================
 
 //import axios from "axios";
-import showAlert from "../components/alerts.js"; // Asegúrate de tener este archivo
+import showAlert from "../components/alerts.js";
 
 // Detectar entorno (usa solo el backend en la nube si el local no está activo)
 const isBackendLocal = false; // Cambiar a true si se usa backend local
@@ -17,7 +17,7 @@ const API_URL = isBackendLocal ? API_URL_LOCAL : API_URL_PROD;
 // ======================================================
 
 const api = axios.create({
-  baseURL: `${API_URL}/api` // 10 segundos para evitar bloqueos si la API no responde
+  baseURL: `${API_URL}/api`
 });
 
 // ======================================================
