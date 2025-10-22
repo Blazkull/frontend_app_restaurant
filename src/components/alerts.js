@@ -1,8 +1,3 @@
-// =====================================
-// 📦 alerts.js — Modal de alertas con íconos SVG y animación
-// =====================================
-
-// Inyectar el modal si no existe
 function renderAlertModal() {
     if (document.getElementById("customAlert")) return;
 
@@ -65,19 +60,19 @@ function showAlert({
     const config = {
         success: {
             bg: "bg-green-100",
-            icon: "../svg/check-mark-ceircle_green.svg"
+            icon: "src/svg/check-mark-ceircle_green.svg"
         },
         error: {
             bg: "bg-red-100",
-            icon: "../svg/close_red.svg"
+            icon: "src/svg/close_red.svg"
         },
         info: {
             bg: "bg-blue-100",
-            icon: "../svg/info_blue.svg"
+            icon: "src/svg/info_blue.svg"
         },
         confirm: {
             bg: "bg-indigo-100",
-            icon: "../svg/info_blue.svg"
+            icon: ".src/svg/info_blue.svg"
         }
     };
 
