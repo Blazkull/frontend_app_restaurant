@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago de factura - Media Luna</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col h-full transition-all duration-300">
+            <!-- Logo -->
+            <div class="flex items-center gap-2 p-4 border-b border-gray-200">
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.5 17H2.83333C3.66176 17 4.33333 16.3284 4.33333 15.5V8.35156C4.33333 7.52314 3.66176 6.85156 2.83333 6.85156H2.5C1.67157 6.85156 1 7.52314 1 8.35156V15.5C1 16.3284 1.67157 17 2.5 17Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M8.83301 16.9991H9.16634C9.99477 16.9991 10.6663 16.3275 10.6663 15.4991V2.5C10.6663 1.67157 9.99477 1 9.16634 1H8.83301C8.00458 1 7.33301 1.67157 7.33301 2.5V15.4991C7.33301 16.3275 8.00458 16.9991 8.83301 16.9991Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M15.166 17H15.4993C16.3278 17 16.9993 16.3284 16.9993 15.5V11.9218C16.9993 11.0934 16.3278 10.4218 15.4993 10.4218H15.166C14.3376 10.4218 13.666 11.0934 13.666 11.9218V15.5C13.666 16.3284 14.3376 17 15.166 17Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <span class="font-semibold text-lg">Media Luna</span>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                         <path d="M2.24999 1.25C1.42156 1.25 0.749992 1.92157 0.749992 2.75V5.68555C2.02853 5.68555 3.06554 6.72201 3.06554 8.00055C3.06554 9.27909 2.02908 10.3155 0.750539 10.3155L0.749992 13.25C0.749992 14.0784 1.42156 14.75 2.24999 14.75H17.75C18.5784 14.75 19.25 14.0784 19.25 13.25V10.3155C17.9717 10.3153 16.9355 9.2789 16.9355 8.00055C16.9355 6.72219 17.9717 5.68584 19.25 5.68555V2.75C19.25 1.92157 18.5784 1.25 17.75 1.25H2.24999Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Facturación</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.109 1.10414C12.4743 0.941781 12.8789 0.851562 13.3045 0.851562C14.932 0.851562 16.2514 2.17095 16.2514 3.79851C16.2514 5.42606 14.932 6.74545 13.3045 6.74545C12.8794 6.74545 12.4753 6.65545 12.1103 6.49346M13.797 9.22074C17.5989 9.44528 18.821 12.009 19.2134 13.6906C19.3993 14.4875 18.7424 15.1487 17.9241 15.1487H15.59M9.75121 3.79855C9.75121 5.4261 8.43182 6.74549 6.80427 6.74549C5.17671 6.74549 3.85732 5.4261 3.85732 3.79855C3.85732 2.171 5.17671 0.851604 6.80427 0.851604C8.43182 0.851604 9.75121 2.171 9.75121 3.79855ZM6.74941 9.20495C10.9833 9.20495 12.3026 11.9309 12.7132 13.6906C12.8991 14.4875 12.2422 15.1487 11.4239 15.1487H2.07489C1.25661 15.1487 0.599726 14.4875 0.785649 13.6906C1.19623 11.9309 2.51554 9.20495 6.74941 9.20495Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Clientes</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Cerrar Sesión -->
+             <div class="p-6 bg-white border-t border-gray-200">
+                <button  id="sidebarLogout" class="w-full bg-[#465FFF] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#3A4FE6] transition-colors flex items-center justify-center gap-2">
+                    Cerrar sesión
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </button>
+                </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden bg-gray-50">
+            
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <button id="menuToggle" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 6L20 6M4 18L20 18M4 12L12 12" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                            RA
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">Rhoon Acoste</span>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                
+                <!-- Breadcrumb -->
+                <div class="flex items-center gap-2 text-sm mb-6">
+                    <a href="#" class="text-gray-500 hover:text-gray-700">Home</a>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <a href="#" class="text-gray-500 hover:text-gray-700">Editar Factura</a>
+                </div>
+
+                <!-- Título -->
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Pago de factura</h1>
+
+                <!-- Card Principal -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-5xl">
+                    
+                    <!-- Header de Factura -->
+                    <div class="flex justify-between items-start mb-8">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900 mb-4">Factura</h2>
+                            <div class="space-y-1">
+                                <p class="text-sm font-semibold text-gray-900">Restaurante La Media Luna</p>
+                                <p class="text-xs text-gray-600">Cra 12 # 45-67</p>
+                                <p class="text-xs text-gray-600">Barranquilla, Colombia</p>
+                            </div>
+                            <div class="mt-4">
+                                <p class="text-xs text-gray-600">Fecha de emisión</p>
+                                <p class="text-sm text-gray-900" id="fechaEmision">11 March, 2027</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-gray-600 mb-1">ID: <span class="font-semibold text-gray-900" id="facturaId">#34854</span></p>
+                            <div class="mt-6">
+                                <p class="text-xs text-gray-600">Cliente</p>
+                                <p class="text-sm font-semibold text-gray-900" id="clienteNombre">Pepito Perez</p>
+                                <p class="text-xs text-gray-600" id="clienteDoc">Cra 12 # 12-60</p>
+                                <p class="text-xs text-gray-600" id="clienteEmail">Barranquilla, Colombia</p>
+                                <p class="text-xs text-gray-600">pepito123@gmail.com</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Productos -->
+                    <div class="mb-8">
+                        <table class="w-full">
+                            <thead class="border-b border-gray-200">
+                                <tr>
+                                    <th class="text-left py-3 text-xs font-semibold text-gray-600 uppercase">S No.</th>
+                                    <th class="text-left py-3 text-xs font-semibold text-gray-600 uppercase">Producto</th>
+                                    <th class="text-center py-3 text-xs font-semibold text-gray-600 uppercase">Cantidad</th>
+                                    <th class="text-right py-3 text-xs font-semibold text-gray-600 uppercase">Precio unitario</th>
+                                    <th class="text-center py-3 text-xs font-semibold text-gray-600 uppercase">Descuento</th>
+                                    <th class="text-right py-3 text-xs font-semibold text-gray-600 uppercase">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productosTableBody" class="divide-y divide-gray-100">
+                                <!-- Se llenará con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Resumen del Pedido -->
+                    <div class="flex justify-end mb-8">
+                        <div class="w-80 space-y-3">
+                            <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                                <span class="text-sm text-gray-600">Resumen del pedido</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Total</span>
+                                <span class="text-lg font-bold text-gray-900" id="totalFactura">$4,235</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-4 border-b border-gray-200">
+                                <span class="text-sm text-gray-600">Dinero recibido</span>
+                                <input 
+                                    type="number" 
+                                    id="dineroRecibido" 
+                                    placeholder="$0.000"
+                                    class="text-right text-sm text-gray-600 border-b border-gray-300 focus:border-indigo-600 outline-none px-2 py-1 w-32"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-600 mb-2">Método de pago</label>
+                                <select id="metodoPago" class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-600">
+                                    <option value="">Select a condition</option>
+                                    <option value="efectivo">Efectivo</option>
+                                    <option value="tarjeta">Tarjeta de crédito/débito</option>
+                                    <option value="transferencia">Transferencia bancaria</option>
+                                    <option value="otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="flex justify-end gap-4">
+                        <button 
+                            id="btnProcesar"
+                            class="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                            Proceder el pago
+                        </button>
+                        <button 
+                            id="btnEnviar"
+                            class="px-6 py-3 bg-teal-500 text-white font-semibold rounded-lg hover:bg-teal-600 transition-colors flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                            Enviar el correo
+                        </button>
+                        <button 
+                            id="btnImprimir"
+                            class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                            </svg>
+                            Imprimir
+                        </button>
+                    </div>
+
+                </div>
+
+            </main>
+
+        </div>
+
+    </div>
+
+    <script src="../Facturacion/pagar-factura.js"></script>
+</body>
+</html>

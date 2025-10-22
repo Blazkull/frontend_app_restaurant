@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TailAdmin - Listar Facturas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 flex flex-col h-full transition-all duration-300 -ml-64">
+            <!-- Logo -->
+           <div class="flex items-center gap-2 p-4 border-b border-gray-200">
+                <div class="w-8 h-8 bg-primary bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.5 17H2.83333C3.66176 17 4.33333 16.3284 4.33333 15.5V8.35156C4.33333 7.52314 3.66176 6.85156 2.83333 6.85156H2.5C1.67157 6.85156 1 7.52314 1 8.35156V15.5C1 16.3284 1.67157 17 2.5 17Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8.83301 16.9991H9.16634C9.99477 16.9991 10.6663 16.3275 10.6663 15.4991V2.5C10.6663 1.67157 9.99477 1 9.16634 1H8.83301C8.00458 1 7.33301 1.67157 7.33301 2.5V15.4991C7.33301 16.3275 8.00458 16.9991 8.83301 16.9991Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M15.166 17H15.4993C16.3278 17 16.9993 16.3284 16.9993 15.5V11.9218C16.9993 11.0934 16.3278 10.4218 15.4993 10.4218H15.166C14.3376 10.4218 13.666 11.0934 13.666 11.9218V15.5C13.666 16.3284 14.3376 17 15.166 17Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+         </svg>
+                </div>
+                <span class="font-semibold text-lg">Media Luna</span>
+            </div>
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                         <path d="M2.24999 1.25C1.42156 1.25 0.749992 1.92157 0.749992 2.75V5.68555C2.02853 5.68555 3.06554 6.72201 3.06554 8.00055C3.06554 9.27909 2.02908 10.3155 0.750539 10.3155L0.749992 13.25C0.749992 14.0784 1.42156 14.75 2.24999 14.75H17.75C18.5784 14.75 19.25 14.0784 19.25 13.25V10.3155C17.9717 10.3153 16.9355 9.2789 16.9355 8.00055C16.9355 6.72219 17.9717 5.68584 19.25 5.68555V2.75C19.25 1.92157 18.5784 1.25 17.75 1.25H2.24999Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Facturación</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-4 py-3 text-black-700 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-colors">
+                            <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.109 1.10414C12.4743 0.941781 12.8789 0.851562 13.3045 0.851562C14.932 0.851562 16.2514 2.17095 16.2514 3.79851C16.2514 5.42606 14.932 6.74545 13.3045 6.74545C12.8794 6.74545 12.4753 6.65545 12.1103 6.49346M13.797 9.22074C17.5989 9.44528 18.821 12.009 19.2134 13.6906C19.3993 14.4875 18.7424 15.1487 17.9241 15.1487H15.59M9.75121 3.79855C9.75121 5.4261 8.43182 6.74549 6.80427 6.74549C5.17671 6.74549 3.85732 5.4261 3.85732 3.79855C3.85732 2.171 5.17671 0.851604 6.80427 0.851604C8.43182 0.851604 9.75121 2.171 9.75121 3.79855ZM6.74941 9.20495C10.9833 9.20495 12.3026 11.9309 12.7132 13.6906C12.8991 14.4875 12.2422 15.1487 11.4239 15.1487H2.07489C1.25661 15.1487 0.599726 14.4875 0.785649 13.6906C1.19623 11.9309 2.51554 9.20495 6.74941 9.20495Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Clientes</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Cerrar Sesión Button en Sidebar -->
+            <div class="p-4  border-gray-200">
+               <div class="p-6 bg-white border-t border-gray-200">
+                <button id="logout" class="w-full bg-[#465FFF] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#3A4FE6] transition-colors flex items-center justify-center gap-2">
+                    Cerrar sesión
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden transition-all duration-300" id="mainContent">
+            
+            <!-- Header Simple -->
+            <header class="bg-white border-b border-gray-200 px-6 py-4">
+                
+                <div class="flex items-center justify-between">
+                    <button id="menuToggle" class="cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 6L20 6M4 18L20 18M4 12L12 12" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg> 
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                            US
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">Usuario</span>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                
+                <!-- Título Principal -->
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Listar facturas</h1>
+                
+                <!-- Breadcrumb -->
+                <div class="flex items-center gap-2 text-sm mb-6">
+                    <a href="#" class="text-gray-500 hover:text-gray-700">Home</a>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span class="text-gray-900 font-medium">Facturación</span>
+                </div>
+
+                <!-- Card Container -->
+                <div class="bg-white rounded-xl border border-gray-200">
+                    
+                    <!-- Card Header -->
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-900 mb-1">Facturas</h2>
+                                <p class="text-sm text-gray-500">Your most recent invoices list</p>
+                            </div>
+
+                            <!-- Todos los controles alineados a la derecha -->
+                            <div class="flex items-center gap-3">
+    <!-- Tab Switcher con fondo deslizante -->
+    <div class="flex items-center bg-gray-100 rounded-lg p-1">
+        <button class="px-4 py-2 text-sm font-medium text-gray-900 bg-white rounded-md shadow-sm transition-all">
+            todas las facturas
+        </button>
+        <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-all">
+            no pagado
+        </button>
+        <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-all">
+            borrado
+        </button>
+    </div>
+    
+    <div class="relative">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input 
+            type="text" 
+            id="searchInput"
+            placeholder="Buscar..." 
+            class="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary w-48 bg-white shadow-sm"
+        />
+    </div>
+    
+    <!-- Botón de Filtro con Dropdown -->
+    <div class="relative">
+        <button 
+            id="filterButton"
+            class="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm bg-white">
+            <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.6547 3.90417C13.6547 2.48436 12.5037 1.33334 11.0839 1.33334C9.66403 1.33334 8.51304 2.48436 8.51302 3.90418M13.6547 3.90417C13.6547 5.32401 12.5037 6.47501 11.0839 6.47501C9.66402 6.47501 8.51302 5.32401 8.51302 3.90418M13.6547 3.90417L16.7096 3.90414M8.51302 3.90418L1.29297 3.90414M4.34792 12.0958C4.34792 10.676 5.49892 9.52501 6.91875 9.52501C8.33858 9.52501 9.48958 10.676 9.48958 12.0958M4.34792 12.0958C4.34792 13.5157 5.49892 14.6667 6.91875 14.6667C8.33858 14.6667 9.48958 13.5157 9.48958 12.0958M4.34792 12.0958L1.29297 12.0958M9.48958 12.0958L16.7096 12.0958" stroke="#344054" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="text-sm font-medium text-gray-600">Filtro</span>
+        </button>
+        
+        <!-- Dropdown menu (Nuevo - como en menu-admin) -->
+        <div id="filterDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
+            <div class="px-4 py-2 border-b border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-900">Filtrar por</h3>
+            </div>
+            <div class="py-2">
+                <button onclick="aplicarFiltro('id')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                    Número de factura
+                </button>
+                <button onclick="aplicarFiltro('mesa')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                    Mesa
+                </button>
+                <button onclick="aplicarFiltro('cliente')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                    Cliente
+                </button>
+                <button onclick="aplicarFiltro('fecha')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                    Fecha
+                </button>
+                <button onclick="aplicarFiltro('total')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                    Total
+                </button>
+                <button onclick="aplicarFiltro('estado')" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
+                    Estado
+                </button>
+                <div class="border-t border-gray-100 mt-2 pt-2">
+                    <button onclick="limpiarFiltros()" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Limpiar filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Filtros por Estado (mantiene la funcionalidad existente) -->
+    <div id="filterModal" class="hidden fixed inset-0 bg-black bg-opacity-50  items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-80 p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Filtros por Estado</h3>
+                <button id="closeFilterModal" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Filtro de Estado -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                <select id="filterEstado" class="w-full border border-gray-200 rounded-lg p-2 text-sm">
+                    <option value="">Todos</option>
+                    <option value="Paga">Paga</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Anulado">Anulado</option>
+                    <option value="Borrado">Borrado</option>
+                    <option value="Atrasado">Atrasado</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button id="clearFilters" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">
+                    Limpiar filtros
+                </button>
+                <button id="applyFilters" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                    Aplicar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-white border-b border-gray-200">
+                                <tr>
+                                    <th class="px-6 py-4 text-left w-12">
+                                        <input type="checkbox" class="rounded border-gray-300 w-4 h-4" />
+                                    </th>
+                                    <th class="px-6 py-4 text-left">
+                                        <button onclick="ordenarPor('id')" class="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Número de factura
+                                            <svg id="icon-id" class="w-3 h-3 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-4 text-left">
+                                        <button onclick="ordenarPor('mesa')" class="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Mesa
+                                            <svg id="icon-mesa" class="w-3 h-3 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-4 text-left">
+                                        <button onclick="ordenarPor('cliente')" class="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Cliente
+                                            <svg id="icon-cliente" class="w-3 h-3 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-4 text-left">
+                                        <button onclick="ordenarPor('fecha')" class="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Created Date
+                                            <svg id="icon-fecha" class="w-3 h-3 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-4 text-left">
+                                        <button onclick="ordenarPor('total')" class="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Total
+                                            <svg id="icon-total" class="w-3 h-3 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-4 text-left">
+                                        <button onclick="ordenarPor('estado')" class="flex items-center gap-2 text-xs font-semibold text-gray-600 uppercase hover:text-gray-900">
+                                            Status
+                                            <svg id="icon-estado" class="w-3 h-3 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="px-6 py-4 text-left">
+                                        <span class="text-xs font-semibold text-gray-600 uppercase">Action</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="facturasTableBody" class="divide-y divide-gray-100">
+                                <!-- Se llenará con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between flex-wrap gap-4">
+                        <p class="text-sm text-gray-600">
+                            Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">174</span>
+                        </p>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </button>
+                            <button class="px-4 py-2 bg-primary text-white rounded-lg font-medium">1</button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">2</button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">3</button>
+                            <span class="px-4 py-2">...</span>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">8</button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">9</button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">10</button>
+                            <button class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </main>
+
+        </div>
+        <!-- MODAL LOGOUT -->
+  <div id="logoutModal"
+    class="hidden fixed inset-0  items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+    <div
+      class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 text-center transform scale-95 opacity-0 transition-all duration-300">
+      <h2 class="text-2xl font-bold text-gray-800 mb-3">¿Estás seguro de salir?</h2>
+      <p class="text-gray-500 text-sm mb-6">
+        Si cierras sesión perderás el acceso inmediato al sistema y deberás ingresar nuevamente.
+      </p>
+      <div class="flex justify-center gap-4">
+        <button id="cancelLogout"
+          class="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition">
+          Cerrar
+        </button>
+        <button id="confirmLogout"
+          class="px-6 py-2 rounded-xl bg-blue-600 text-white font-medium shadow-md hover:bg-blue-700 transition">
+          Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+
+    </div>
+
+    <script src="/src/Facturacion/cajero-facturacion.js"></script>
+</body>
+</html>
