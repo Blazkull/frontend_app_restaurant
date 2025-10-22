@@ -1,5 +1,5 @@
-import api from "./src/api/api.js";
-import showAlert from "./src/components/alerts.js";
+import api from "../../api/api.js";
+import showAlert from "../../components/alerts.js";
 
 document.getElementById("loginForm").addEventListener("submit", async function (e) {
   e.preventDefault();
@@ -29,7 +29,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     localStorage.setItem("username", username); // GUARDAR USERNAME
 
     // Redirigir al dashboard o página principal
-    window.location.href = "./src/usuarios/usuarios.html";
+    window.location.href = "/src/usuarios/usuarios.html";
 
   } catch (error) {
     if (error.response) {
