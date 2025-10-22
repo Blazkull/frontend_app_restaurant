@@ -1,5 +1,5 @@
-import api from "./api/api.js";
-import showAlert from "./components/alerts.js";
+import api from "../api/api.js";
+import showAlert from "../components/alerts.js";
 
 let clients = [];
 let currentPage = 1;
