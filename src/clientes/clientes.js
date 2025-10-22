@@ -1,231 +1,129 @@
-// ======================================================
-// Importaciones
-// ======================================================
-import api from "../api/api.js";
-import showAlert from "../components/alerts.js";
+// clientes.js
+const API_BASE = "https://backend-app-restaurant-2kfa.onrender.com/api/clients";
 
-// ======================================================
-// Variables globales
-// ======================================================
-let showingDeleted = false; // Estado para saber si se están mostrando eliminados
-const tbody = document.getElementById("clientes-table-body");
-const toggleDeletedBtn = document.getElementById("toggleDeletedBtn");
-const createClientForm = document.getElementById("createClientForm");
+document.addEventListener("DOMContentLoaded", () => {
+    const tableBody = document.getElementById("clientes-table-body");
+    const crearClienteBtn = document.getElementById("crear-cliente-btn");
+    const createClientForm = document.getElementById("createClientForm");
+    const toggleDeletedBtn = document.getElementById("toggleDeletedBtn");
 
-// ======================================================
-// Cargar clientes (activos o eliminados)
-// ======================================================
-async function loadClients(showDeleted = false) {
-    try {
-        const response = await api.get(`/clients`, {
-            params: { deleted: showDeleted },
-        });
-        const clients = response.data.data;
+    let showDeleted = false;
 
-        tbody.innerHTML = "";
+    // 🔹 Cargar lista de clientes
+    async function loadClients() {
+        try {
+            const endpoint = showDeleted ? `${API_BASE}?show_deleted=true` : API_BASE;
+            const res = await axios.get(endpoint);
+            const clients = res.data;
 
-        clients.forEach((client) => {
-            const row = `
-        <tr class="hover:bg-gray-50 border-b">
-          <td class="px-6 py-4 text-sm text-gray-900">${client.fullname}</td>
-          <td class="px-6 py-4 text-sm text-gray-500">${client.address}</td>
-          <td class="px-6 py-4 text-sm text-gray-500">${client.email}</td>
-          <td class="px-6 py-4 text-sm text-gray-500">${client.identification_number}</td>
-          <td class="px-6 py-4 text-sm text-gray-500">${client.phone_number}</td>
-          <td class="px-6 py-4 text-sm text-gray-500">${new Date(client.updated_at).toLocaleDateString()}</td>
-          <td class="px-6 py-4 text-center flex items-center justify-center space-x-3">
-            ${client.deleted
-                    ? `
-              <button onclick="restoreClient(${client.id})" 
-                class="text-green-600 hover:text-green-800" title="Restaurar cliente">
-                <img src="../svg/restore_green.svg" alt="restaurar" class="w-5 h-5">
-              </button>`
-                    : `
-              <button onclick="editClient(${client.id})" 
-                class="text-blue-600 hover:text-blue-800" title="Editar cliente">
-                <img src="../svg/edit_blue.svg" alt="editar" class="w-5 h-5">
-              </button>
-              <button onclick="deleteClient(${client.id})" 
-                class="text-red-600 hover:text-red-800" title="Eliminar cliente">
-                <img src="../svg/delete_red.svg" alt="eliminar" class="w-5 h-5">
-              </button>`
-                }
-          </td>
-        </tr>`;
-            tbody.innerHTML += row;
-        });
-    } catch (error) {
-        console.error("Error al cargar clientes:", error);
+            tableBody.innerHTML = "";
+
+            if (clients.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-gray-500 py-4">
+                            No hay clientes registrados
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            clients.forEach(client => {
+                const row = document.createElement("tr");
+                row.classList.add("hover:bg-gray-50");
+
+                row.innerHTML = `
+                    <td class="px-6 py-3 text-sm font-medium text-gray-900">${client.name}</td>
+                    <td class="px-6 py-3 text-sm text-gray-500">${client.address || "-"}</td>
+                    <td class="px-6 py-3 text-sm text-gray-500">${client.email || "-"}</td>
+                    <td class="px-6 py-3 text-sm text-gray-500">${client.identificacion || "-"}</td>
+                    <td class="px-6 py-3 text-sm text-gray-500">${client.phone_number || "-"}</td>
+                    <td class="px-6 py-3 text-sm text-gray-500">${new Date(client.updated_at).toLocaleDateString()}</td>
+                    <td class="px-6 py-3 text-center">
+                        ${client.is_deleted
+                            ? `<button class="text-green-600 hover:underline" onclick="restoreClient(${client.id})">Restaurar</button>`
+                            : `<button class="text-red-600 hover:underline" onclick="deleteClient(${client.id})">Eliminar</button>`
+                        }
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+
+            lucide.createIcons();
+        } catch (error) {
+            console.error("❌ Error cargando clientes:", error);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-red-500 py-4">
+                        Error cargando datos
+                    </td>
+                </tr>
+            `;
+        }
     }
-}
 
-// ======================================================
-// Crear cliente
-// ======================================================
-createClientForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    // 🔹 Crear cliente
+    createClientForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const data = {
-        fullname: document.getElementById("fullname").value.trim(),
-        identification_number: document.getElementById("identification_number").value.trim(),
-        id_type_identificacion: parseInt(document.getElementById("id_type_identificacion").value),
-        phone_number: document.getElementById("phone_number").value.trim(),
-        email: document.getElementById("email").value.trim(),
-        address: document.getElementById("address").value.trim(),
+        const newClient = {
+            name: document.getElementById("fullname").value,
+            identificacion: document.getElementById("identification_number").value,
+            type_identificacion_id: parseInt(document.getElementById("id_type_identificacion").value),
+            phone_number: document.getElementById("phone_number").value,
+            email: document.getElementById("email").value,
+            address: document.getElementById("address").value,
+        };
+
+        try {
+            await axios.post(API_BASE, newClient);
+            alert("✅ Cliente creado exitosamente");
+            createClientForm.reset();
+            loadClients();
+        } catch (error) {
+            console.error("❌ Error creando cliente:", error.response?.data || error.message);
+            alert("Error al crear cliente");
+        }
+    });
+
+    // 🔹 Eliminar cliente
+    window.deleteClient = async (id) => {
+        if (!confirm("¿Seguro que deseas eliminar este cliente?")) return;
+
+        try {
+            await axios.delete(`${API_BASE}/${id}`);
+            alert("🗑️ Cliente eliminado correctamente");
+            loadClients();
+        } catch (error) {
+            console.error("❌ Error eliminando cliente:", error.response?.data || error.message);
+            alert("Error al eliminar cliente");
+        }
     };
 
-    try {
-        await api.post("/clients", data);
+    // 🔹 Restaurar cliente
+    window.restoreClient = async (id) => {
+        try {
+            await axios.patch(`${API_BASE}/${id}/restore`);
+            alert("♻️ Cliente restaurado correctamente");
+            loadClients();
+        } catch (error) {
+            console.error("❌ Error restaurando cliente:", error.response?.data || error.message);
+            alert("Error al restaurar cliente");
+        }
+    };
 
-        showAlert({
-            type: "success",
-            title: "Cliente creado",
-            message: "El cliente fue agregado exitosamente.",
-        });
-
-        const modal = bootstrap.Modal.getInstance(document.getElementById("createClientModal"));
-        modal.hide();
-
-        createClientForm.reset();
+    // 🔹 Alternar vista de eliminados
+    toggleDeletedBtn.addEventListener("click", () => {
+        showDeleted = !showDeleted;
+        toggleDeletedBtn.innerHTML = showDeleted
+            ? `<svg data-lucide="users" class="w-5 h-5 mr-2"></svg> Mostrar Activos`
+            : `<svg data-lucide="archive-restore" class="w-5 h-5 mr-2"></svg> Mostrar Eliminados`;
+        lucide.createIcons();
         loadClients();
-    } catch (error) {
-        console.error("Error al crear cliente:", error);
-    }
-});
-
-// ======================================================
-// Editar cliente
-// ======================================================
-window.editClient = async (id) => {
-    try {
-        const response = await api.get(`/clients/${id}`);
-        const client = response.data;
-
-        // Llenar el modal con los datos
-        document.getElementById("fullname").value = client.fullname;
-        document.getElementById("identification_number").value = client.identification_number;
-        document.getElementById("id_type_identificacion").value = client.id_type_identificacion;
-        document.getElementById("phone_number").value = client.phone_number;
-        document.getElementById("email").value = client.email;
-        document.getElementById("address").value = client.address;
-
-        // Cambiar título del modal
-        document.getElementById("createClientModalLabel").textContent = "Editar Cliente";
-
-        // Mostrar modal
-        const modal = new bootstrap.Modal(document.getElementById("createClientModal"));
-        modal.show();
-
-        // Reemplazar el evento del formulario temporalmente
-        createClientForm.onsubmit = async (e) => {
-            e.preventDefault();
-
-            const updatedData = {
-                fullname: document.getElementById("fullname").value.trim(),
-                identification_number: document.getElementById("identification_number").value.trim(),
-                id_type_identificacion: parseInt(document.getElementById("id_type_identificacion").value),
-                phone_number: document.getElementById("phone_number").value.trim(),
-                email: document.getElementById("email").value.trim(),
-                address: document.getElementById("address").value.trim(),
-            };
-
-            try {
-                await api.patch(`/clients/${id}`, updatedData);
-
-                showAlert({
-                    type: "success",
-                    title: "Cliente actualizado",
-                    message: "Los datos del cliente se han modificado correctamente.",
-                });
-
-                modal.hide();
-                loadClients();
-            } catch (error) {
-                console.error("Error al actualizar cliente:", error);
-            } finally {
-                // Restaurar comportamiento del formulario original
-                createClientForm.onsubmit = null;
-                createClientForm.addEventListener("submit", createClientForm);
-            }
-        };
-    } catch (error) {
-        console.error("Error al obtener cliente:", error);
-    }
-};
-
-// ======================================================
-// Eliminar cliente
-// ======================================================
-window.deleteClient = async (id) => {
-    const result = await showAlert({
-        type: "confirm",
-        title: "¿Eliminar cliente?",
-        message: "Esta acción no se puede deshacer.",
-        showCancel: true,
     });
 
-    if (result.isConfirmed) {
-        try {
-            await api.delete(`/clients/${id}`);
-
-            await showAlert({
-                type: "success",
-                title: "Cliente eliminado",
-                message: "El cliente fue eliminado correctamente.",
-            });
-
-            // Recarga los clientes activos
-            loadClients(showingDeleted);
-        } catch (error) {
-            console.error("Error al eliminar cliente:", error);
-            showAlert({
-                type: "error",
-                title: "Error",
-                message: "No se pudo eliminar el cliente.",
-            });
-        }
-    }
-};
-
-
-// ======================================================
-// Restaurar cliente eliminado
-// ======================================================
-window.restoreClient = async (id) => {
-    const result = await showAlert({
-        type: "confirm",
-        title: "¿Restaurar cliente?",
-        message: "Este cliente volverá a estar activo.",
-        showCancel: true,
-    });
-
-    if (result.isConfirmed) {
-        try {
-            await api.patch(`/clients/${id}/restore`);
-            showAlert({
-                type: "success",
-                title: "Cliente restaurado",
-                message: "El cliente fue restaurado correctamente.",
-            });
-            loadClients(true);
-        } catch (error) {
-            console.error("Error al restaurar cliente:", error);
-        }
-    }
-};
-
-// ======================================================
-// Botón para alternar entre activos y eliminados
-// ======================================================
-toggleDeletedBtn.addEventListener("click", () => {
-    showingDeleted = !showingDeleted;
-    toggleDeletedBtn.textContent = showingDeleted ? "Mostrar Activos" : "Mostrar Eliminados";
-    loadClients(showingDeleted);
-});
-
-// ======================================================
-// Inicializar al cargar el DOM
-// ======================================================
-document.addEventListener("DOMContentLoaded", () => {
+    // Inicializar
     loadClients();
 });

@@ -9,6 +9,7 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> 
     
+    
     <script>
         tailwind.config = {
             theme: {
@@ -64,10 +65,14 @@
     <div id="logoutModal"></div> 
     
     
+
+    
     <script src="../components/components.js"></script>
     <script type="module" src="./menu.js"></script> 
     <script type="module" src="../api/api.js"></script>
     <script type="module" src="../components/alerts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         if (typeof initComponents === 'function') {
             initComponents();

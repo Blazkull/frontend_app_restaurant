@@ -1,220 +1,191 @@
-// cocina.js (Versión Corregida y Optimizada)
-import api from '../api/api'; 
+// static/js/cocina.js
 
-// =========================================================
-// Mapeo de Estados (CRUCIAL: Usa los IDs de tu tabla 'status')
-// =========================================================
-const statusMap = {
-    // Nombre API (DB) : { id: ID de la DB, local: Slug local }
-    "Pendiente": { id: 8, local: "pendiente" }, 
-    "Preparación": { id: 9, local: "en_preparacion" },
-    "Listo": { id: 10, local: "listo" },
-    "Entregado": { id: 11, local: "entregado" } // O ID 7, según uses kitchen_tickets o orders
-};
+// ==============================
+// ⚙️ Configuración de Axios
+// ==============================
+const API_BASE_URL = "https://backend-app-restaurant-2kfa.onrender.com/api/kitchen/orders/";
 
-// Mapeo inverso para encontrar el ID de la DB a partir del slug local (ej: 'listo' -> 10)
-function getStatusIdByLocal(localStatus) {
-    for (const key in statusMap) {
-        if (statusMap[key].local === localStatus) {
-            return statusMap[key].id;
-        }
-    }
-    return null;
-}
-
-// ----------------------------------------------------
-// UI Helpers
-// ----------------------------------------------------
-
-// Función para actualizar los contadores
-function updateCounts(data) {
-    const counts = data.reduce((acc, order) => {
-        acc[order.estado] = (acc[order.estado] || 0) + 1;
-        return acc;
-    }, {});
-
-    document.getElementById("count-pendientes").textContent = counts["pendiente"] || 0;
-    document.getElementById("count-preparacion").textContent = counts["en_preparacion"] || 0;
-    document.getElementById("count-listos").textContent = counts["listo"] || 0;
-}
-
-
-function renderPedidos(data) {
-    updateCounts(data); // Actualiza los contadores
-
-    const pendientes = document.getElementById("pendientes");
-    const preparacion = document.getElementById("preparacion");
-    const listos = document.getElementById("listos");
-
-    pendientes.innerHTML = "";
-    preparacion.innerHTML = "";
-    listos.innerHTML = "";
-
-    if (!data || data.length === 0) {
-        pendientes.innerHTML = `<p class="p-4 text-gray-500 italic">No hay pedidos pendientes</p>`;
-        preparacion.innerHTML = `<p class="p-4 text-gray-500 italic">No hay pedidos en preparación</p>`;
-        listos.innerHTML = `<p class="p-4 text-gray-500 italic">No hay pedidos listos</p>`;
-        return;
-    }
-
-    data.forEach(pedido => {
-        // Asumiendo que la API devuelve el ID del pedido directamente (más robusto)
-        // Si no devuelve un campo 'id', se usa el método original:
-        const id = pedido.id || (pedido.order_number.match(/#(\d+)/) ? parseInt(pedido.order_number.match(/#(\d+)/)[1]) : 'N/A');
-        
-        const hora = pedido.created_at; 
-        const items = pedido.items.map(item => `${item.quantity}x ${item.menu_item}${item.note ? ` (${item.note})` : ''}`);
-        const estado = pedido.estado; 
-
-        let botonTexto = "";
-        let nuevoEstadoLocal = null;
-        let buttonClass = "";
-        let lucideIcon = "";
-        
-        if (estado === "pendiente") {
-            botonTexto = "Iniciar Preparación";
-            nuevoEstadoLocal = "en_preparacion";
-            buttonClass = "bg-orange-500 hover:bg-orange-600";
-            lucideIcon = "play";
-        } else if (estado === "en_preparacion") {
-            botonTexto = "Marcar Listo";
-            nuevoEstadoLocal = "listo";
-            buttonClass = "bg-blue-500 hover:bg-blue-600";
-            lucideIcon = "check-circle";
-        } else if (estado === "listo") {
-            // Este botón es para que el mesero sepa que debe servir
-            botonTexto = "Notificar Entrega"; 
-            nuevoEstadoLocal = "entregado";
-            buttonClass = "bg-green-500 hover:bg-green-600";
-            lucideIcon = "bell";
-        }
-
-        const card = document.createElement("div");
-        card.className = "p-4 border rounded-xl shadow-sm bg-white";
-
-        card.innerHTML = `
-            <p class="font-bold">${pedido.order_number}</p>
-            <p class="text-sm text-gray-500">${pedido.table} - ${hora}</p>
-            <ul class="mt-2 text-gray-700 text-sm list-disc pl-5 space-y-1">
-                ${items.map(item => `<li>${item}</li>`).join("")}
-            </ul>
-            ${
-                botonTexto
-                    ? `<button data-id="${id}" data-estado-local="${nuevoEstadoLocal}" 
-                        class="mt-3 w-full flex items-center justify-between py-2 px-3 rounded-xl text-white font-medium transition ${buttonClass}">
-                        <span>${botonTexto}</span>
-                        <i data-lucide="${lucideIcon}"></i>
-                        </button>`
-                    : ""
-            }
-        `;
-
-
-        // Insertar en la columna correcta
-        if (estado === "pendiente") {
-            pendientes.appendChild(card);
-        } else if (estado === "en_preparacion") {
-            preparacion.appendChild(card);
-        } else if (estado === "listo") {
-            listos.appendChild(card);
-        }
-
-        const btn = card.querySelector("button");
-        if (btn) {
-            btn.addEventListener("click", async () => {
-                const orderId = btn.dataset.id;
-                const nextStateLocal = btn.dataset.estadoLocal;
-                
-                const success = await updateOrderStatus(orderId, nextStateLocal);
-                if(success) {
-                    // El alert es solo para fines de prueba, usar una notificación Toast en producción
-                    alert(`Pedido #${orderId} cambiado a estado "${nextStateLocal.replace('_', ' ')}"`);
-                    fetchOrders(); 
-                } else {
-                    alert(`Error al cambiar el estado del Pedido #${orderId}`);
-                }
-            });
-        }
-
-        lucide.createIcons();
-    });
-}
-
-// ----------------------------------------------------
-// FUNCIONES DE INTERACCIÓN CON LA API
-// ----------------------------------------------------
-
-/**
- * Función para obtener los pedidos de la API.
- */
-async function fetchOrders() {
-    try {
-        // Asumiendo que la API devuelve un objeto { data: { 'Pendiente': [..], 'Preparación': [..] } }
-        const response = await api.get('/kitchen/orders/');
-        const apiData = response.data.data; 
-
-        const allOrdersArray = []; 
-        
-        for (const [apiStatus, orders] of Object.entries(apiData)) {
-            // Busca la configuración del estado en el mapeo
-            const statusConfig = statusMap[apiStatus];
-            
-            if (statusConfig) {
-                // Añade el estado local (slug) a cada pedido
-                const localStatus = statusConfig.local;
-                const ordersWithStatus = orders.map(order => ({
-                    ...order,
-                    estado: localStatus,
-                }));
-                allOrdersArray.push(...ordersWithStatus);
-            }
-        }
-        
-        renderPedidos(allOrdersArray);
-
-    } catch (error) {
-        console.error("Error al obtener los pedidos:", error);
-        // Opcional: Mostrar un mensaje de error en la UI
-        renderPedidos([]); 
-    }
-}
-
-
-/**
- * Función para actualizar el estado de un pedido enviando el ID de estado de la DB.
- * @param {number} id - El ID del pedido.
- * @param {string} newStateLocal - El slug local del nuevo estado ('en_preparacion', 'listo', 'entregado').
- * @returns {boolean} - true si la actualización fue exitosa.
- */
-async function updateOrderStatus(id, newStateLocal) {
-    const id_status = getStatusIdByLocal(newStateLocal);
-
-    if (!id_status) {
-        console.error(`Estado local desconocido o sin ID de DB: ${newStateLocal}`);
-        return false;
-    }
-
-    try {
-        // Enviar el ID de la DB al backend, que es el método más limpio y seguro.
-        await api.patch(`/orders/${id}/`, {
-            id_status: id_status 
-        });
-
-        // NOTA: Si tu API de cocina usa un endpoint diferente (ej: /kitchen/tickets/{id}/),
-        // debes cambiar la ruta de la llamada:
-        // await api.patch(`/kitchen/tickets/${id_ticket}/`, { id_status: id_status });
-
-        return true;
-    } catch (error) {
-        console.error(`Error al actualizar el estado del pedido #${id} a ID ${id_status}:`, error.response ? error.response.data : error.message);
-        return false;
-    }
-}
-
-
-// Iniciar la carga de pedidos al cargar la página
-document.addEventListener('DOMContentLoaded', () => {
-    fetchOrders();
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
-// Opcional: Configurar una recarga automática cada cierto tiempo (ej. 15 segundos)
-// setInterval(fetchOrders, 15000);
+
+// ==============================
+// 🚀 Inicialización
+// ==============================
+document.addEventListener("DOMContentLoaded", async () => {
+  createToastContainer();
+  await loadOrders();
+});
+
+// ==============================
+// 📦 Cargar órdenes
+// ==============================
+async function loadOrders() {
+  try {
+    const { data: orders } = await api.get("/api/kitchen/orders/");
+    renderOrders(orders);
+  } catch (error) {
+    console.error("❌ Error cargando órdenes:", error);
+    showToast("Error al cargar las órdenes", "error");
+  }
+}
+
+// ==============================
+// 🧩 Renderizado de órdenes
+// ==============================
+function renderOrders(orders) {
+  const pendientes = document.getElementById("pendientes");
+  const preparacion = document.getElementById("preparacion");
+  const listos = document.getElementById("listos");
+
+  // Limpiar columnas
+  pendientes.innerHTML = "";
+  preparacion.innerHTML = "";
+  listos.innerHTML = "";
+
+  // Contadores
+  let countPendientes = 0;
+  let countPreparacion = 0;
+  let countListos = 0;
+
+  orders.forEach(order => {
+    const card = createOrderCard(order);
+
+    switch (order.status) {
+      case "pendiente":
+        pendientes.appendChild(card);
+        countPendientes++;
+        break;
+      case "en_preparacion":
+        preparacion.appendChild(card);
+        countPreparacion++;
+        break;
+      case "listo":
+        listos.appendChild(card);
+        countListos++;
+        break;
+    }
+  });
+
+  // Actualizar contadores
+  document.getElementById("count-pendientes").textContent = countPendientes;
+  document.getElementById("count-preparacion").textContent = countPreparacion;
+  document.getElementById("count-listos").textContent = countListos;
+}
+
+// ==============================
+// 🧱 Crear tarjeta de orden
+// ==============================
+function createOrderCard(order) {
+  const div = document.createElement("div");
+  div.className =
+    "p-4 border rounded-lg shadow-sm bg-gray-50 hover:bg-gray-100 transition duration-200 transform hover:scale-[1.01]";
+
+  const colorClass = {
+    pendiente: "border-orange-400",
+    en_preparacion: "border-blue-400",
+    listo: "border-green-400",
+  }[order.status] || "border-gray-300";
+
+  div.classList.add(colorClass);
+
+  div.innerHTML = `
+    <div class="flex justify-between items-start">
+      <div>
+        <h3 class="font-bold text-gray-800">Orden #${order.id}</h3>
+        <p class="text-sm text-gray-500">${order.customer_name || "Cliente no especificado"}</p>
+        <ul class="text-xs text-gray-600 mt-2 list-disc ml-4">
+          ${(order.items || [])
+            .map(item => `<li>${item.name} x${item.quantity}</li>`)
+            .join("")}
+        </ul>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <button 
+          class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-md text-sm transition" 
+          onclick="updateOrderStatus(${order.id}, 'previous')">
+          ⏪
+        </button>
+        <button 
+          class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm transition" 
+          onclick="updateOrderStatus(${order.id}, 'next')">
+          ⏩
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-3 text-xs text-gray-500 italic">
+      Estado actual: <span class="font-semibold capitalize">${order.status.replace("_", " ")}</span>
+    </div>
+  `;
+
+  return div;
+}
+
+// ==============================
+// 🔄 Cambiar estado de orden
+// ==============================
+async function updateOrderStatus(orderId, action) {
+  const endpoint =
+    action === "next"
+      ? `${orderId}/next-status`
+      : `${orderId}/previous-status`;
+
+  try {
+    const { data: updated } = await api.post(endpoint);
+    showToast(`Orden #${orderId} pasó a "${updated.status.replace("_", " ")}"`, "success");
+    await loadOrders();
+  } catch (error) {
+    console.error("❌ Error actualizando orden:", error);
+    showToast("No se pudo actualizar la orden", "error");
+  }
+}
+
+// ==============================
+// 🔔 Sistema de notificaciones
+// ==============================
+function createToastContainer() {
+  if (document.getElementById("toast-container")) return;
+  const container = document.createElement("div");
+  container.id = "toast-container";
+  container.className = "fixed top-5 right-5 flex flex-col gap-3 z-[9999]";
+  document.body.appendChild(container);
+}
+
+function showToast(message, type = "info") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+
+  const baseClasses =
+    "px-4 py-2 rounded-lg shadow-lg text-white font-medium text-sm flex items-center gap-2 transform transition-all duration-300 opacity-0 translate-y-2";
+
+  const typeClasses = {
+    success: "bg-green-500",
+    error: "bg-red-500",
+    info: "bg-blue-500",
+  }[type];
+
+  toast.className = `${baseClasses} ${typeClasses}`;
+  toast.innerHTML = `<span>${message}</span>`;
+
+  container.appendChild(toast);
+
+  // Animar entrada
+  setTimeout(() => {
+    toast.classList.remove("opacity-0", "translate-y-2");
+    toast.classList.add("opacity-100", "translate-y-0");
+  }, 100);
+
+  // Eliminar después de 3 segundos
+  setTimeout(() => {
+    toast.classList.remove("opacity-100", "translate-y-0");
+    toast.classList.add("opacity-0", "translate-y-2");
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
