@@ -17,8 +17,7 @@ const API_URL = isBackendLocal ? API_URL_LOCAL : API_URL_PROD;
 // ======================================================
 
 const api = axios.create({
-  baseURL: `${API_URL}/api`,
-  timeout: 10000, // 10 segundos para evitar bloqueos si la API no responde
+  baseURL: `${API_URL}/api` // 10 segundos para evitar bloqueos si la API no responde
 });
 
 // ======================================================
