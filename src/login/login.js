@@ -1,5 +1,5 @@
-import api from "../../api/api.js";
-import showAlert from "../../components/alerts.js";
+import api from "/src/api/api.js";
+import showAlert from "/src/components/alerts.js";
 
 document.getElementById("loginForm").addEventListener("submit", async function (e) {
   e.preventDefault();
