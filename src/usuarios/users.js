@@ -1,5 +1,5 @@
-import api from "../api/api.js";
-import showAlert from "../components/alerts.js";
+import api from "src/api/api.js";
+import showAlert from "src/components/alerts.js";
 
 let users = [];
 let currentPage = 1;
@@ -532,17 +532,17 @@ function renderFilteredTable(filtered) {
         <td class="p-3 flex space-x-2">
           ${showingDeleted
         ? `<button onclick="restoreUser('${u.id}')" class="text-green-600 hover:text-green-800">
-                  <img src="../svg/update_blue.svg" alt="restaurar" class="w-5 h-5">
+                  <img src="src/svg/update_blue.svg" alt="restaurar" class="w-5 h-5">
                 </button>`
         : `
                 <button onclick="openEditModal(${u.id})" class="text-blue-600 hover:text-blue-800">
-                  <img src="../svg/edit_blue.svg" alt="editar" class="w-5 h-5">
+                  <img src="src/svg/edit_blue.svg" alt="editar" class="w-5 h-5">
                 </button>
                 <button onclick="openPasswordModal('${u.id}')" class="text-yellow-600 hover:text-yellow-800">
-                  <img src="../svg/lock.svg" alt="contraseña" class="w-5 h-5">
+                  <img src="src/svg/lock.svg" alt="contraseña" class="w-5 h-5">
                 </button>
                 <button onclick="deleteUser('${u.id}')" class="text-red-600 hover:text-red-800">
-                  <img src="../svg/delete_red.svg" alt="eliminar" class="w-5 h-5">
+                  <img src="src/svg/delete_red.svg" alt="eliminar" class="w-5 h-5">
                 </button>
               `
       }
