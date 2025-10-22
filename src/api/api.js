@@ -3,7 +3,7 @@
 // ======================================================
 
 //import axios from "axios";
-import showAlert from "../components/alerts.js";
+import showAlert from "src/components/alerts.js";
 
 // Detectar entorno (usa solo el backend en la nube si el local no está activo)
 const isBackendLocal = false; // Cambiar a true si se usa backend local
@@ -62,7 +62,7 @@ api.interceptors.response.use(
         }).then((result) => {
           // Solo redirige si el usuario confirma
           if (result.isConfirmed) {
-            window.location.href = "../login/login.html";
+            window.location.href = "src/login/login.html";
           }
         });
       }
