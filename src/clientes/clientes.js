@@ -1,172 +1,231 @@
-// Datos de prueba basados en la imagen
-// let clientesDemo = [
-//     { id: 1, nombre: "Lindsey Curtis", direccion: "Cra 87#109A-34", correo: "Lindsey44@gmail.com", cedula: "1045735577", telefono: "+57 3023964845", actualizado: "12 Feb, 2027" },
-//     { id: 2, nombre: "Kaiya George", direccion: "Cra 87#109A-34", correo: "kaiya.g@mail.com", cedula: "1045735578", telefono: "+57 3023964846", actualizado: "13 Mar, 2027" },
-//     { id: 3, nombre: "Zoin Geldt", direccion: "Cra 87#109A-34", correo: "zoing@test.com", cedula: "1045735579", telefono: "+57 3023964847", actualizado: "19 Mar, 2027" },
-//     { id: 4, nombre: "Abram Schleifer", direccion: "Cra 87#109A-34", correo: "abram.s@test.com", cedula: "1045735580", telefono: "+57 3023964848", actualizado: "25 Apr, 2027" },
-//     { id: 5, nombre: "Carla George", direccion: "Cra 87#109A-34", correo: "carla.g@test.com", cedula: "1045735581", telefono: "+57 3023964849", actualizado: "11 May, 2027" },
-//     { id: 6, nombre: "Emery Culhane", direccion: "Cra 87#109A-34", correo: "emery.c@test.com", cedula: "1045735582", telefono: "+57 3023964850", actualizado: "29 Jun, 2027" },
-//     { id: 7, nombre: "Livia Donin", direccion: "Cra 87#109A-34", correo: "livia.d@test.com", cedula: "1045735583", telefono: "+57 3023964851", actualizado: "22 Jul, 2027" },
-//     { id: 8, nombre: "Miracle Bator", direccion: "Cra 87#109A-34", correo: "miracle.b@test.com", cedula: "1045735584", telefono: "+57 3023964852", actualizado: "05 Aug, 2027" },
-//     { id: 9, nombre: "Lincoln Herwitz", direccion: "Cra 87#109A-34", correo: "lincoln.h@test.com", cedula: "1045735585", telefono: "+57 3023964853", actualizado: "09 Sep, 2027" },
-//     { id: 10, nombre: "Ekstrom Bothman", direccion: "Cra 87#109A-34", correo: "ekstrom.b@test.com", cedula: "1045735586", telefono: "+57 3023964854", actualizado: "15 Nov, 2027" },
-//     // Añadir más datos para simular paginación/total
-//     { id: 11, nombre: "Andrea García", direccion: "Calle 10#5-20", correo: "andrea@test.com", cedula: "1045735587", telefono: "+57 3023964855", actualizado: "20 Nov, 2027" },
-//     { id: 12, nombre: "Carlos Vives", direccion: "Av. Caracas 1-1", correo: "carlos@test.com", cedula: "1045735588", telefono: "+57 3023964856", actualizado: "01 Dec, 2027" },
-//     { id: 13, nombre: "Daniela Castro", direccion: "Cl. 100 #20-5", correo: "daniela@test.com", cedula: "1045735589", telefono: "+57 3023964857", actualizado: "05 Dec, 2027" },
-// ];
+// ======================================================
+// Importaciones
+// ======================================================
+import api from "../api/api.js";
+import showAlert from "../components/alerts.js";
 
-const tableBody = document.getElementById("clientes-table-body");
-const totalDatosSpan = document.getElementById("total-datos");
-const crearClienteBtn = document.getElementById("crear-cliente-btn");
-const modal = document.getElementById("modal-creacion-cliente");
-const cancelarClienteBtn = document.getElementById("cancelar-cliente-btn");
-const formCrearCliente = document.getElementById("form-crear-cliente");
+// ======================================================
+// Variables globales
+// ======================================================
+let showingDeleted = false; // Estado para saber si se están mostrando eliminados
+const tbody = document.getElementById("clientes-table-body");
+const toggleDeletedBtn = document.getElementById("toggleDeletedBtn");
+const createClientForm = document.getElementById("createClientForm");
 
-/**
- * Renderiza las filas de clientes en la tabla.
- * NOTA: Esta versión simple renderiza todos los datos. La paginación real
- * y filtrado requerirían más lógica.
- */
-function renderClientes(data) {
-    tableBody.innerHTML = "";
-    totalDatosSpan.textContent = data.length; // Actualiza el total de datos
-
-    data.forEach(cliente => {
-        const row = document.createElement("tr");
-        row.className = "hover:bg-gray-50 transition duration-150";
-
-        // NOTA: Se ha simplificado la columna 'Cédula' y 'Teléfono' para
-        // que coincidan con la imagen original (sin la columna 'Sales Assistant').
-        row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${cliente.nombre}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${cliente.direccion}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${cliente.correo}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${cliente.cedula}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${cliente.telefono}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${cliente.actualizado}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
-                <button data-id="${cliente.id}" data-action="edit" title="Editar"
-                    class="p-1 rounded-full text-primary-blue hover:bg-primary-blue/10 transition duration-150">
-                    <svg data-lucide="pencil" class="w-4 h-4"></svg>
-                </button>
-                <button data-id="${cliente.id}" data-action="delete" title="Eliminar"
-                    class="p-1 rounded-full text-red-500 hover:bg-red-500/10 transition duration-150">
-                    <svg data-lucide="trash-2" class="w-4 h-4"></svg>
-                </button>
-            </td>
-        `;
-        tableBody.appendChild(row);
-
-        // Agregar listeners para botones (Demo)
-        row.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', () => handleClienteAction(button.dataset.id, button.dataset.action));
+// ======================================================
+// Cargar clientes (activos o eliminados)
+// ======================================================
+async function loadClients(showDeleted = false) {
+    try {
+        const response = await api.get(`/clients`, {
+            params: { deleted: showDeleted },
         });
-    });
-    // Volver a crear los íconos de Lucide
-    lucide.createIcons();
-}
+        const clients = response.data.data;
 
-/**
- * Maneja las acciones de Editar/Eliminar (Demo).
- */
-function handleClienteAction(id, action) {
-    alert(`(Demo) Acción: ${action} para el Cliente ID: ${id}`);
-    if (action === 'delete') {
-        const index = clientesDemo.findIndex(c => c.id === parseInt(id));
-        if (index > -1) {
-            clientesDemo.splice(index, 1); // Eliminar de los datos de prueba
-            renderClientes(clientesDemo); // Volver a renderizar
-        }
+        tbody.innerHTML = "";
+
+        clients.forEach((client) => {
+            const row = `
+        <tr class="hover:bg-gray-50 border-b">
+          <td class="px-6 py-4 text-sm text-gray-900">${client.fullname}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">${client.address}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">${client.email}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">${client.identification_number}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">${client.phone_number}</td>
+          <td class="px-6 py-4 text-sm text-gray-500">${new Date(client.updated_at).toLocaleDateString()}</td>
+          <td class="px-6 py-4 text-center flex items-center justify-center space-x-3">
+            ${client.deleted
+                    ? `
+              <button onclick="restoreClient(${client.id})" 
+                class="text-green-600 hover:text-green-800" title="Restaurar cliente">
+                <img src="../svg/restore_green.svg" alt="restaurar" class="w-5 h-5">
+              </button>`
+                    : `
+              <button onclick="editClient(${client.id})" 
+                class="text-blue-600 hover:text-blue-800" title="Editar cliente">
+                <img src="../svg/edit_blue.svg" alt="editar" class="w-5 h-5">
+              </button>
+              <button onclick="deleteClient(${client.id})" 
+                class="text-red-600 hover:text-red-800" title="Eliminar cliente">
+                <img src="../svg/delete_red.svg" alt="eliminar" class="w-5 h-5">
+              </button>`
+                }
+          </td>
+        </tr>`;
+            tbody.innerHTML += row;
+        });
+    } catch (error) {
+        console.error("Error al cargar clientes:", error);
     }
-    // Para 'edit', se abriría el modal con los datos del cliente
 }
 
+// ======================================================
+// Crear cliente
+// ======================================================
+createClientForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-// --- Lógica del Modal ---
-
-/** Muestra el modal de creación */
-function showModal() {
-    modal.classList.remove("hidden");
-    // Animación de entrada
-    setTimeout(() => {
-        modal.classList.add("opacity-100");
-        modal.querySelector("div").classList.remove("scale-95");
-        modal.querySelector("div").classList.add("scale-100");
-    }, 10);
-}
-
-/** Oculta el modal de creación */
-function hideModal() {
-    // Animación de salida
-    modal.classList.remove("opacity-100");
-    modal.querySelector("div").classList.add("scale-95");
-    modal.querySelector("div").classList.remove("scale-100");
-    
-    // Oculta completamente después de la transición
-    setTimeout(() => {
-        modal.classList.add("hidden");
-        formCrearCliente.reset(); // Limpiar el formulario
-    }, 300); 
-}
-
-/** Maneja el envío del formulario */
-function handleFormSubmit(event) {
-    event.preventDefault();
-    
-    const nombre = document.getElementById("nombre-cliente").value;
-    const cedula = document.getElementById("cedula-cliente").value;
-    const correo = document.getElementById("correo-cliente").value;
-    const telefono = document.getElementById("telefono-cliente").value;
-    const direccion = document.getElementById("direccion-cliente").value;
-
-    // Encontrar el ID más alto
-    const nextId = clientesDemo.length > 0 ? Math.max(...clientesDemo.map(c => c.id)) + 1 : 1;
-    const fechaActual = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/\./g, '');
-
-    const nuevoCliente = {
-        id: nextId,
-        nombre: nombre,
-        direccion: direccion,
-        correo: correo,
-        cedula: cedula,
-        telefono: telefono,
-        actualizado: fechaActual.replace(' ', ', ') // Formato: 12 Feb, 2027
+    const data = {
+        fullname: document.getElementById("fullname").value.trim(),
+        identification_number: document.getElementById("identification_number").value.trim(),
+        id_type_identificacion: parseInt(document.getElementById("id_type_identificacion").value),
+        phone_number: document.getElementById("phone_number").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        address: document.getElementById("address").value.trim(),
     };
 
-    // Agregar el nuevo cliente al arreglo (DEMO)
-    clientesDemo.push(nuevoCliente);
-    
-    alert(`Cliente "${nombre}" (${cedula}) creado con éxito.`);
+    try {
+        await api.post("/clients", data);
 
-    // Volver a renderizar la tabla
-    renderClientes(clientesDemo);
+        showAlert({
+            type: "success",
+            title: "Cliente creado",
+            message: "El cliente fue agregado exitosamente.",
+        });
 
-    // Ocultar el modal
-    hideModal();
-}
+        const modal = bootstrap.Modal.getInstance(document.getElementById("createClientModal"));
+        modal.hide();
 
-// ----------------------------------------------------------------
-// EVENT LISTENERS
-// ----------------------------------------------------------------
-
-// 1. Render inicial
-document.addEventListener('DOMContentLoaded', () => {
-    renderClientes(clientesDemo);
-});
-
-// 2. Abrir Modal al hacer clic en "Crear Cliente"
-crearClienteBtn.addEventListener("click", showModal);
-
-// 3. Cerrar Modal (botón Cancelar)
-cancelarClienteBtn.addEventListener("click", hideModal);
-
-// 4. Cerrar Modal (clic fuera del contenido del modal)
-modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-        hideModal();
+        createClientForm.reset();
+        loadClients();
+    } catch (error) {
+        console.error("Error al crear cliente:", error);
     }
 });
 
-// 5. Enviar formulario
-formCrearCliente.addEventListener("submit", handleFormSubmit);
+// ======================================================
+// Editar cliente
+// ======================================================
+window.editClient = async (id) => {
+    try {
+        const response = await api.get(`/clients/${id}`);
+        const client = response.data;
+
+        // Llenar el modal con los datos
+        document.getElementById("fullname").value = client.fullname;
+        document.getElementById("identification_number").value = client.identification_number;
+        document.getElementById("id_type_identificacion").value = client.id_type_identificacion;
+        document.getElementById("phone_number").value = client.phone_number;
+        document.getElementById("email").value = client.email;
+        document.getElementById("address").value = client.address;
+
+        // Cambiar título del modal
+        document.getElementById("createClientModalLabel").textContent = "Editar Cliente";
+
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById("createClientModal"));
+        modal.show();
+
+        // Reemplazar el evento del formulario temporalmente
+        createClientForm.onsubmit = async (e) => {
+            e.preventDefault();
+
+            const updatedData = {
+                fullname: document.getElementById("fullname").value.trim(),
+                identification_number: document.getElementById("identification_number").value.trim(),
+                id_type_identificacion: parseInt(document.getElementById("id_type_identificacion").value),
+                phone_number: document.getElementById("phone_number").value.trim(),
+                email: document.getElementById("email").value.trim(),
+                address: document.getElementById("address").value.trim(),
+            };
+
+            try {
+                await api.patch(`/clients/${id}`, updatedData);
+
+                showAlert({
+                    type: "success",
+                    title: "Cliente actualizado",
+                    message: "Los datos del cliente se han modificado correctamente.",
+                });
+
+                modal.hide();
+                loadClients();
+            } catch (error) {
+                console.error("Error al actualizar cliente:", error);
+            } finally {
+                // Restaurar comportamiento del formulario original
+                createClientForm.onsubmit = null;
+                createClientForm.addEventListener("submit", createClientForm);
+            }
+        };
+    } catch (error) {
+        console.error("Error al obtener cliente:", error);
+    }
+};
+
+// ======================================================
+// Eliminar cliente
+// ======================================================
+window.deleteClient = async (id) => {
+    const result = await showAlert({
+        type: "confirm",
+        title: "¿Eliminar cliente?",
+        message: "Esta acción no se puede deshacer.",
+        showCancel: true,
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await api.delete(`/clients/${id}`);
+
+            await showAlert({
+                type: "success",
+                title: "Cliente eliminado",
+                message: "El cliente fue eliminado correctamente.",
+            });
+
+            // Recarga los clientes activos
+            loadClients(showingDeleted);
+        } catch (error) {
+            console.error("Error al eliminar cliente:", error);
+            showAlert({
+                type: "error",
+                title: "Error",
+                message: "No se pudo eliminar el cliente.",
+            });
+        }
+    }
+};
+
+
+// ======================================================
+// Restaurar cliente eliminado
+// ======================================================
+window.restoreClient = async (id) => {
+    const result = await showAlert({
+        type: "confirm",
+        title: "¿Restaurar cliente?",
+        message: "Este cliente volverá a estar activo.",
+        showCancel: true,
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await api.patch(`/clients/${id}/restore`);
+            showAlert({
+                type: "success",
+                title: "Cliente restaurado",
+                message: "El cliente fue restaurado correctamente.",
+            });
+            loadClients(true);
+        } catch (error) {
+            console.error("Error al restaurar cliente:", error);
+        }
+    }
+};
+
+// ======================================================
+// Botón para alternar entre activos y eliminados
+// ======================================================
+toggleDeletedBtn.addEventListener("click", () => {
+    showingDeleted = !showingDeleted;
+    toggleDeletedBtn.textContent = showingDeleted ? "Mostrar Activos" : "Mostrar Eliminados";
+    loadClients(showingDeleted);
+});
+
+// ======================================================
+// Inicializar al cargar el DOM
+// ======================================================
+document.addEventListener("DOMContentLoaded", () => {
+    loadClients();
+});

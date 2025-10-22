@@ -1,17 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-  </head>
-  <body>
-    <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TailAdmin - Clientes</title>
+    <title>Clientes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -57,25 +53,40 @@
                         <div class="flex items-center space-x-4">
                             <div class="flex items-center">
                                 <span class="text-sm text-gray-600 mr-2">Ver</span>
-                                <select class="border border-gray-300 rounded-lg p-1.5 text-sm focus:ring-primary-blue focus:border-primary-blue" id="items-per-page">
+                                <select
+                                    class="border border-gray-300 rounded-lg p-1.5 text-sm focus:ring-primary-blue focus:border-primary-blue"
+                                    id="items-per-page">
                                     <option value="10">10</option>
                                     <option value="25">25</option>
                                     <option value="50">50</option>
                                 </select>
                             </div>
                             <div class="relative">
-                                <!-- Aplicando estilo de borde y placeholder al input de búsqueda -->
+                                <!-- Campo de búsqueda -->
                                 <input type="text" placeholder="Search..."
-                                    class="pl-10 pr-4 py-1.5 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue placeholder-input-border" id="search-input">
-                                <svg data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></svg>
+                                    class="pl-10 pr-4 py-1.5 border border-input-border rounded-lg text-sm focus:ring-primary-blue focus:border-primary-blue placeholder-input-border"
+                                    id="search-input">
+                                <svg data-lucide="search"
+                                    class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></svg>
                             </div>
                         </div>
 
-                        <button id="crear-cliente-btn"
-                            class="flex items-center px-4 py-2 bg-primary-blue text-white rounded-xl font-medium hover:bg-blue-700 shadow-md">
-                            <svg data-lucide="plus" class="w-5 h-5 mr-2"></svg>
-                            Crear Cliente
-                        </button>
+                        <!-- Botones de acción -->
+                        <div class="flex items-center space-x-3">
+                            <!-- Botón Mostrar Eliminados -->
+                            <button id="toggleDeletedBtn"
+                                class="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 shadow-md border border-gray-300">
+                                <svg data-lucide="archive-restore" class="w-5 h-5 mr-2"></svg>
+                                Mostrar Eliminados
+                            </button>
+
+                            <!-- Botón Crear Cliente -->
+                            <button id="crear-cliente-btn"
+                                class="flex items-center px-4 py-2 bg-primary-blue text-white rounded-xl font-medium hover:bg-blue-700 shadow-md">
+                                <svg data-lucide="plus" class="w-5 h-5 mr-2"></svg>
+                                Crear Cliente
+                            </button>
+                        </div>
                     </div>
 
                     <div class="overflow-x-auto border border-gray-200 rounded-xl">
@@ -97,17 +108,21 @@
                                 </tr>
                             </thead>
                             <tbody id="clientes-table-body" class="bg-white divide-y divide-gray-200">
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
 
                     <div id="pagination-footer" class="flex justify-between items-center mt-4">
-                        <p class="text-sm text-gray-600">Mostrando 1 - 10 de <span id="total-datos">37</span> Datos</p>
+                        <p class="text-sm text-gray-600">Mostrando 1 - 10 de <span id="total-datos">37</span> Datos
+                        </p>
                         <div class="flex items-center space-x-2" id="pagination-controls">
-                            <button class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">Previo</button>
+                            <button
+                                class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">Previo</button>
                             <span class="px-3 py-1 text-sm bg-primary-blue text-white rounded-lg">1</span>
-                            <button class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">2</button>
-                            <button class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">Siguiente</button>
+                            <button
+                                class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">2</button>
+                            <button
+                                class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150">Siguiente</button>
                         </div>
                     </div>
 
@@ -116,108 +131,92 @@
         </main>
     </div>
 
-    <!-- MODAL DE CREACIÓN DE CLIENTE (CON ESTILOS ACTUALIZADOS) -->
-    <div id="modal-creacion-cliente"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay opacity-0 bg-black/20" 
-        aria-modal="true" role="dialog" aria-labelledby="modal-title">
-        
-        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg transform transition-all duration-300 scale-95">
-            <h2 id="modal-title" class="text-xl font-semibold mb-4 border-b pb-2">Creación de Cliente</h2>
+    <!-- Modal Crear Cliente -->
+    <div class="modal fade" id="createClientModal" tabindex="-1" aria-labelledby="createClientModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="createClientModalLabel">Crear Cliente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
-            <form id="form-crear-cliente" class="space-y-4">
+                <div class="modal-body">
+                    <form id="createClientForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre completo</label>
+                            <input type="text" class="form-control" id="fullname" required>
+                        </div>
 
-                <!-- Fila 1: Tipo y Número de Documento -->
-                <div class="flex space-x-4">
-                    <div class="flex-1">
-                        <div class="w-5/5">
-                            <!-- LABEL: text-label-text (#344054) -->
-                            <label for="tipo-documento" class="block text-sm font-medium text-label-text">Tipo Documento</label>
-                            <!-- SELECT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
-                            <select id="tipo-documento" required
-                                class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 text-base focus:outline-none focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
-                                <option value="" >Seleccionar</option>
-                                <option value="CEDULA">Cédula</option>
-                                <option value="CEDULA_EXTR">Cédula Extranjería</option>
-                                <option value="PASAPORTE">Pasaporte</option>
-                                <option value="NIT">NIT</option>
+                        <div class="mb-3">
+                            <label class="form-label">Número de identificación</label>
+                            <input type="text" class="form-control" id="identification_number" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de identificación</label>
+                            <select class="form-select" id="id_type_identificacion" required>
+                                <option value="1">Cédula de Ciudadanía</option>
+                                <option value="2">NIT</option>
+                                <option value="3">Cédula de Extranjería</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="w-5/5">
-                            <!-- LABEL: text-label-text (#344054) -->
-                            <label for="cedula-cliente" class="block text-sm font-medium text-label-text">Número</label>
-                            <!-- INPUT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
-                            <input type="text" id="cedula-cliente" placeholder="Ej: 1045735577" required
-                                class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
+
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="phone_number" required>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Fila 2: Nombre Completo y Correo -->
-                <div class="flex space-x-4">
-                    <div class="flex-1">
-                        <!-- LABEL: text-label-text (#344054) -->
-                        <label for="nombre-cliente" class="block text-sm font-medium text-label-text">Nombre Completo</label>
-                        <!-- INPUT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
-                        <input type="text" id="nombre-cliente" placeholder="Ej: Juan Pérez" required
-                            class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
-                    </div>
-                    <div class="flex-1">
-                        <!-- LABEL: text-label-text (#344054) -->
-                        <label for="correo-cliente" class="block text-sm font-medium text-label-text">Correo</label>
-                        <!-- INPUT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
-                        <input type="email" id="correo-cliente" placeholder="Ej: correo@ejemplo.com" required
-                            class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
-                    </div>
-                </div>
-                
-                <!-- Fila 3: Teléfono y Dirección -->
-                <div class="flex space-x-4">
-                    <div class="flex-1">
-                        <!-- LABEL: text-label-text (#344054) -->
-                        <label for="telefono-cliente" class="block text-sm font-medium text-label-text">Teléfono</label>
-                        <!-- INPUT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
-                        <input type="tel" id="telefono-cliente" placeholder="Ej: +57 3023964845" required
-                            class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
-                    </div>
-                    <div class="flex-1">
-                        <!-- LABEL: text-label-text (#344054) -->
-                        <label for="direccion-cliente" class="block text-sm font-medium text-label-text">Dirección</label>
-                        <!-- INPUT: border-input-border (#D0D5DD) y rounded-lg (8px) -->
-                        <input type="text" id="direccion-cliente" placeholder="Ej: Cra 87#109A-34" required
-                            class="mt-1 block w-full border border-input-border rounded-lg shadow-sm py-2 px-3 focus:ring-primary-blue focus:border-primary-blue sm:text-sm placeholder-input-border">
-                    </div>
-                </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
 
-                <div class="flex justify-end space-x-3 pt-4">
-                    <button type="button" id="cancelar-cliente-btn"
-                        class="px-4 py-2 text-gray-700 bg-gray-200 rounded-xl font-medium hover:bg-gray-300 transition duration-150">
-                        Cancelar
-                    </button>
-                    <button type="submit"
-                        class="px-4 py-2 bg-primary-blue text-white rounded-xl font-medium hover:bg-blue-700 transition duration-150 shadow-md">
-                        Guardar
-                    </button>
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="address" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Guardar Cliente</button>
+                    </form>
                 </div>
-            </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Logout -->
+    <div id="logoutModal"
+        class="hidden fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+        <div
+            class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 text-center transform scale-95 opacity-0 transition-all duration-300">
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">¿Estas seguro de salir?</h2>
+            <p class="text-gray-500 text-sm mb-6">
+                Si cierras sesión perderás el acceso inmediato al sistema y deberás ingresar nuevamente.
+            </p>
+            <div class="flex justify-center gap-4">
+                <button id="cancelLogout"
+                    class="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition">
+                    Cerrar
+                </button>
+                <button id="confirmLogout"
+                    class="px-6 py-2 rounded-xl bg-indigo-600 text-white font-medium shadow-md hover:bg-indigo-700 transition">
+                    Continuar
+                </button>
+            </div>
         </div>
     </div>
 
 
     <script src="../components/components.js"></script>
-    <script src="./clientes.js"></script>
+    <script type="module" src="./clientes.js"></script>
     <script>
-        // Asumiendo que initComponents maneja el sidebar y topbar
-        if (typeof initComponents === 'function') {
-            initComponents();
+        if (typeof initComponents === "function") {
+            initComponents(); // Carga navbar y sidebar
         }
-        // Inicializar íconos de Lucide
-        lucide.createIcons();
+        lucide.createIcons(); // Activa íconos iniciales
     </script>
+
 </body>
 
-</html>
-    <script type="module" src="script.js"></script>
-  </body>
 </html>
