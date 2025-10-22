@@ -1,5 +1,5 @@
 // ======================================================
-// menu.js — versión final completa con carga de categorías reales
+// menu.js — versión corregida para usar response.data.data
 // ======================================================
 
 import api from '../api/api.js';
@@ -21,21 +21,21 @@ let productsData = [];
 let allCategories = [];
 
 // ======================================================
-// DATOS MOCK (fallback)
+// FALLBACK MOCKS
 // ======================================================
 
-const MOCK_CATEGORIES = [
-  { id: 1, name: "Pizzas", active: true },
-  { id: 2, name: "Hamburguesas" },
-  { id: 3, name: "Bebidas" },
-  { id: 4, name: "Postres" },
-];
+// const MOCK_CATEGORIES = [
+//   { id: 1, name: "Pizzas", active: true },
+//   { id: 2, name: "Hamburguesas" },
+//   { id: 3, name: "Bebidas" },
+//   { id: 4, name: "Postres" },
+// ];
 
-const MOCK_PRODUCTS = [
-  { id: 101, id_category: 1, name: "Pizza Margarita", price: 15.50, description: "Masa fina, tomate, mozzarella, albahaca.", time_preparation: 15, image: "pizza-mock.jpg" },
-  { id: 102, id_category: 2, name: "Hamburguesa Clásica", price: 12.00, description: "Carne 180g, queso cheddar, lechuga, tomate.", time_preparation: 10, image: "burger-mock.jpg" },
-  { id: 103, id_category: 3, name: "Limonada de Menta", price: 3.50, description: "Jugo de limón, menta y azúcar.", time_preparation: 5, image: "drink-mock.jpg" },
-];
+// const MOCK_PRODUCTS = [
+//   { id: 101, id_category: 1, name: "Pizza Margarita", price: 15.50, description: "Masa fina, tomate, mozzarella, albahaca.", time_preparation: 15, image: "pizza-mock.jpg" },
+//   { id: 102, id_category: 2, name: "Hamburguesa Clásica", price: 12.00, description: "Carne 180g, queso cheddar, lechuga, tomate.", time_preparation: 10, image: "burger-mock.jpg" },
+//   { id: 103, id_category: 3, name: "Limonada de Menta", price: 3.50, description: "Jugo de limón, menta y azúcar.", time_preparation: 5, image: "drink-mock.jpg" },
+// ];
 
 // ======================================================
 // API CALLS
@@ -56,13 +56,19 @@ async function fetchCategories() {
     const response = await api.get("/categories");
     Swal.close();
 
-    allCategories = response.data.items || response.data || MOCK_CATEGORIES;
+    // ✅ tu API devuelve el array en response.data.data
+    allCategories = response.data?.data || MOCK_CATEGORIES;
 
     showAlert({
       type: "success",
       title: "Categorías cargadas",
       message: `Se cargaron ${allCategories.length} categorías correctamente.`,
     });
+
+    // Forzar primera categoría activa
+    allCategories[0].active = true;
+
+    renderCategories(allCategories);
 
   } catch (error) {
     Swal.close();
@@ -73,9 +79,8 @@ async function fetchCategories() {
       message: "No se pudieron obtener las categorías. Se usarán datos locales.",
     });
     allCategories = MOCK_CATEGORIES;
+    renderCategories(allCategories);
   }
-
-  renderCategories(allCategories);
 }
 
 /**
@@ -91,9 +96,10 @@ async function fetchMenuItems() {
 
   try {
     const response = await api.get("/menu_items");
-    const items = response.data.items || response.data;
     Swal.close();
 
+    // ✅ Ajuste: tu API también usa "data" como raíz
+    const items = response.data?.items || response.data?.data || [];
     productsData = items.map(i => ({
       id: i.id,
       id_category: i.id_category,
@@ -107,8 +113,13 @@ async function fetchMenuItems() {
     showAlert({
       type: "success",
       title: "Menú cargado",
-      message: `Se cargaron ${productsData.length} productos desde el servidor.`,
+      message: `Se cargaron ${productsData.length} productos.`,
     });
+
+    // Pintar los productos de la primera categoría
+    if (allCategories.length > 0) {
+      renderMenuProducts(productsData.filter(p => p.id_category === allCategories[0].id));
+    }
 
   } catch (error) {
     Swal.close();
@@ -119,13 +130,7 @@ async function fetchMenuItems() {
       message: "No se pudo obtener el menú desde el servidor. Se mostrarán datos locales.",
     });
     productsData = MOCK_PRODUCTS;
-  }
-
-  // Si hay categorías, mostrar la primera activa
-  if (allCategories.length > 0) {
-    allCategories[0].active = true;
-    renderCategories(allCategories);
-    renderMenuProducts(productsData.filter(p => p.id_category === allCategories[0].id));
+    renderMenuProducts(productsData.filter(p => p.id_category === 1));
   }
 }
 
@@ -191,7 +196,7 @@ async function sendOrder() {
 }
 
 // ======================================================
-// RENDER DE CATEGORÍAS
+// RENDER CATEGORÍAS
 // ======================================================
 
 function renderCategories(categories) {
@@ -217,7 +222,7 @@ function renderCategories(categories) {
 }
 
 // ======================================================
-// RENDER DEL MENÚ
+// RENDER MENÚ
 // ======================================================
 
 function renderMenuProducts(products) {
@@ -265,7 +270,7 @@ function renderMenuProducts(products) {
 }
 
 // ======================================================
-// RENDER DE COMANDA
+// RENDER COMANDA
 // ======================================================
 
 function renderComanda() {
