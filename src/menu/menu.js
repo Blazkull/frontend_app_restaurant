@@ -1,9 +1,10 @@
 // ======================================================
-// menu.js — versión corregida para usar response.data.data
+// menu.js — versión corregida para depurar error 422
 // ======================================================
 
 import api from '../api/api.js';
 import showAlert from '../components/alerts.js';
+import { checkSession } from '../api/api.js';
 
 // Elementos del DOM
 const menuGrid = document.getElementById("menu-grid");
@@ -21,25 +22,83 @@ let productsData = [];
 let allCategories = [];
 
 // ======================================================
-// FALLBACK MOCKS
+// FALLBACK DATA (si el servidor falla)
 // ======================================================
 
-// const MOCK_CATEGORIES = [
-//   { id: 1, name: "Pizzas", active: true },
-//   { id: 2, name: "Hamburguesas" },
-//   { id: 3, name: "Bebidas" },
-//   { id: 4, name: "Postres" },
-// ];
+const MOCK_CATEGORIES = [
+  { id: 1, name: "Pizzas", active: true },
+  { id: 2, name: "Hamburguesas", active: false },
+  { id: 3, name: "Bebidas", active: false },
+  { id: 4, name: "Postres", active: false },
+];
 
-// const MOCK_PRODUCTS = [
-//   { id: 101, id_category: 1, name: "Pizza Margarita", price: 15.50, description: "Masa fina, tomate, mozzarella, albahaca.", time_preparation: 15, image: "pizza-mock.jpg" },
-//   { id: 102, id_category: 2, name: "Hamburguesa Clásica", price: 12.00, description: "Carne 180g, queso cheddar, lechuga, tomate.", time_preparation: 10, image: "burger-mock.jpg" },
-//   { id: 103, id_category: 3, name: "Limonada de Menta", price: 3.50, description: "Jugo de limón, menta y azúcar.", time_preparation: 5, image: "drink-mock.jpg" },
-// ];
+const MOCK_PRODUCTS = [
+  { 
+    id: 101, 
+    id_category: 1, 
+    name: "Pizza Margarita", 
+    price: 15.50, 
+    description: "Masa artesanal, salsa de tomate, mozzarella fresca y albahaca.", 
+    time_preparation: 15, 
+    image: "default.jpg" 
+  },
+  { 
+    id: 102, 
+    id_category: 1, 
+    name: "Pizza Pepperoni", 
+    price: 17.00, 
+    description: "Masa fina, salsa especial, mozzarella y pepperoni.", 
+    time_preparation: 15, 
+    image: "default.jpg" 
+  },
+  { 
+    id: 103, 
+    id_category: 2, 
+    name: "Hamburguesa Clásica", 
+    price: 12.00, 
+    description: "Carne 180g, queso cheddar, lechuga, tomate y salsa especial.", 
+    time_preparation: 10, 
+    image: "default.jpg" 
+  },
+  { 
+    id: 104, 
+    id_category: 3, 
+    name: "Limonada Natural", 
+    price: 3.50, 
+    description: "Jugo de limón fresco, agua y azúcar.", 
+    time_preparation: 5, 
+    image: "default.jpg" 
+  },
+  { 
+    id: 105, 
+    id_category: 4, 
+    name: "Tiramisú", 
+    price: 6.00, 
+    description: "Bizcocho, café, mascarpone y cacao.", 
+    time_preparation: 0, 
+    image: "default.jpg" 
+  },
+];
 
 // ======================================================
-// API CALLS
+// API CALLS CON REINTENTOS
 // ======================================================
+
+/**
+ * Función auxiliar para reintentar peticiones
+ */
+async function retryRequest(requestFn, maxRetries = 2, delayMs = 1500) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await requestFn();
+    } catch (error) {
+      if (attempt === maxRetries) throw error;
+      
+      console.warn(`⚠️ Intento ${attempt} falló, reintentando en ${delayMs}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+}
 
 /**
  * Cargar categorías reales desde la API
@@ -47,39 +106,45 @@ let allCategories = [];
 async function fetchCategories() {
   const loadingAlert = Swal.fire({
     title: "Cargando categorías...",
-    text: "Por favor espera mientras se obtienen las categorías.",
+    text: "Conectando con el servidor...",
     allowOutsideClick: false,
     didOpen: () => Swal.showLoading(),
   });
 
   try {
-    const response = await api.get("/categories");
+    const response = await retryRequest(() => api.get("/categories"));
     Swal.close();
 
-    // ✅ tu API devuelve el array en response.data.data
-    allCategories = response.data?.data || MOCK_CATEGORIES;
+    allCategories = response.data?.data || [];
+
+    if (allCategories.length === 0) {
+      throw new Error("No se recibieron categorías");
+    }
 
     showAlert({
       type: "success",
       title: "Categorías cargadas",
       message: `Se cargaron ${allCategories.length} categorías correctamente.`,
+      timer: 2000,
     });
 
     // Forzar primera categoría activa
     allCategories[0].active = true;
-
     renderCategories(allCategories);
 
   } catch (error) {
     Swal.close();
     console.warn("⚠️ Error al cargar categorías:", error);
-    showAlert({
-      type: "warning",
-      title: "Modo local",
-      message: "No se pudieron obtener las categorías. Se usarán datos locales.",
-    });
+    
+    // Usar datos de respaldo
     allCategories = MOCK_CATEGORIES;
     renderCategories(allCategories);
+    
+    showAlert({
+      type: "warning",
+      title: "Modo sin conexión",
+      message: "El servidor no responde. Usando datos de demostración.",
+    });
   }
 }
 
@@ -89,24 +154,24 @@ async function fetchCategories() {
 async function fetchMenuItems() {
   const loadingAlert = Swal.fire({
     title: "Cargando menú...",
-    text: "Por favor espera mientras obtenemos los productos.",
+    text: "Obteniendo productos del servidor...",
     allowOutsideClick: false,
     didOpen: () => Swal.showLoading(),
   });
 
   try {
-    const response = await api.get("/menu_items");
+    const response = await retryRequest(() => api.get("/menu_items"));
     Swal.close();
 
-    // ✅ Ajuste: tu API también usa "data" como raíz
     const items = response.data?.items || response.data?.data || [];
+    
     productsData = items.map(i => ({
       id: i.id,
       id_category: i.id_category,
       name: i.name,
-      price: i.price,
-      description: i.ingredients,
-      time_preparation: i.estimated_time,
+      price: parseFloat(i.price),
+      description: i.ingredients || i.description || "",
+      time_preparation: parseInt(i.estimated_time) || 0,
       image: i.image || "default.jpg"
     }));
 
@@ -114,6 +179,7 @@ async function fetchMenuItems() {
       type: "success",
       title: "Menú cargado",
       message: `Se cargaron ${productsData.length} productos.`,
+      timer: 2000,
     });
 
     // Pintar los productos de la primera categoría
@@ -124,13 +190,19 @@ async function fetchMenuItems() {
   } catch (error) {
     Swal.close();
     console.warn("⚠️ Error al cargar menú:", error);
+    
+    // Usar datos de respaldo
+    productsData = MOCK_PRODUCTS;
+    
+    if (allCategories.length > 0) {
+      renderMenuProducts(productsData.filter(p => p.id_category === allCategories[0].id));
+    }
+    
     showAlert({
       type: "warning",
-      title: "Menú local",
-      message: "No se pudo obtener el menú desde el servidor. Se mostrarán datos locales.",
+      title: "Modo sin conexión",
+      message: "Mostrando menú de demostración.",
     });
-    productsData = MOCK_PRODUCTS;
-    renderMenuProducts(productsData.filter(p => p.id_category === 1));
   }
 }
 
@@ -157,20 +229,33 @@ async function sendOrder() {
   enviarPedidoBtn.disabled = true;
   enviarPedidoBtn.textContent = "Enviando...";
 
+  // Obtener el ID del usuario actual desde localStorage
+  const currentUserId = parseInt(localStorage.getItem("user_id")) || 1;
+
+  // Construir payload según el formato esperado por el backend
   const orderPayload = {
     id_table: ACTIVE_TABLE_ID,
-    items: currentOrder.map(item => ({
-      id_product: item.id_product,
-      quantity: item.quantity,
-      note: item.note || "",
-    })),
+    id_status: 1,  // ✅ Estado inicial: "Pendiente" o "En preparación"
+    id_user_created: currentUserId,  // ✅ Usuario que crea la orden
+    items: currentOrder.map(item => {
+      const product = productsData.find(p => p.id === item.id_product);
+      return {
+        id_menu_item: item.id_product,
+        quantity: item.quantity,
+        price_at_order: product ? product.price : 0,  // ✅ Precio al momento de ordenar
+        note: item.note || ""
+      };
+    })
   };
+
+  // DEBUG: Mostrar en consola el payload exacto
+  console.log("📦 Payload a enviar:", JSON.stringify(orderPayload, null, 2));
 
   try {
     const response = await api.post("/orders", orderPayload);
     Swal.close();
 
-    const orderId = response.data.id || response.data.order_id || "N/A";
+    const orderId = response.data?.id || response.data?.order_id || "N/A";
 
     showAlert({
       type: "success",
@@ -184,11 +269,38 @@ async function sendOrder() {
   } catch (error) {
     Swal.close();
     console.error("❌ Error al enviar el pedido:", error);
-    showAlert({
-      type: "error",
-      title: "Error al enviar",
-      message: error.response?.data?.detail || "Ocurrió un problema al enviar el pedido.",
-    });
+    
+    // Mostrar detalles específicos del error 422
+    if (error.response?.status === 422) {
+      console.error("📋 Detalles del error 422:", error.response.data);
+      
+      let errorDetails = "Error de validación en los datos enviados.";
+      
+      if (error.response.data?.detail) {
+        const detail = error.response.data.detail;
+        
+        if (Array.isArray(detail)) {
+          errorDetails = detail.map(err => {
+            const field = err.loc?.join(' → ') || 'campo';
+            return `• ${field}: ${err.msg}`;
+          }).join('\n');
+        } else if (typeof detail === 'string') {
+          errorDetails = detail;
+        }
+      }
+      
+      showAlert({
+        type: "error",
+        title: "Error de validación (422)",
+        message: errorDetails,
+      });
+    } else {
+      showAlert({
+        type: "error",
+        title: "Error al enviar",
+        message: error.response?.data?.detail || "Ocurrió un problema al enviar el pedido.",
+      });
+    }
   } finally {
     enviarPedidoBtn.disabled = false;
     enviarPedidoBtn.textContent = "Enviar pedido";
@@ -353,7 +465,12 @@ function addItemToOrder(productId, productName, quantity, note) {
   if (existingItemIndex > -1) {
     currentOrder[existingItemIndex].quantity += quantity;
   } else {
-    currentOrder.push({ id_product: productId, name: productName, quantity, note });
+    currentOrder.push({ 
+      id_product: productId, 
+      name: productName, 
+      quantity: quantity,
+      note: note || ""
+    });
   }
 
   showAlert({
@@ -382,6 +499,9 @@ function handleComandaAction(event) {
 // ======================================================
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // Verificar sesión antes de cargar datos
+  checkSession();
+  
   await fetchCategories();
   await fetchMenuItems();
   renderComanda();
