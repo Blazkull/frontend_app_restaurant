@@ -17,12 +17,13 @@ document.getElementById("loginForm").addEventListener("submit", async function (
   }
 
   // Mostrar loading
-  const loadingAlert = Swal.fire({
+  await Swal.fire({
     title: "Iniciando sesión...",
     text: "Por favor espera...",
     allowOutsideClick: false,
     didOpen: () => Swal.showLoading(),
   });
+
 
   try {
     // 1. Hacer login
