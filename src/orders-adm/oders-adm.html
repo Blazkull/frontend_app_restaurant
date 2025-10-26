@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TailAdmin - Pedidos Interactivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="./orders-adm.css">
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <div class="flex h-screen">
+        <div id="sidebar"></div>
+
+        <div class="flex-1 flex flex-col ml-64">
+            <div id="topbar"
+                class="fixed top-0 left-64 right-0 z-50 bg-white shadow-sm h-16 flex items-center px-6 border-b border-gray-100">
+            </div>
+
+            <main class="p-6 overflow-y-auto mt-16">
+                <div class="p-6">
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+                        <div
+                            class="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4 border-l-4 border-yellow-500">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100">
+                                <img src="../svg/clock_yellow.svg"
+                                    alt="Icono Reloj Pendiente" class="w-8 h-8">
+                            </div>
+                            <div>
+                                <p class="text-4xl font-bold text-gray-800">12,384</p>
+                                <p class="text-sm text-gray-500 mt-1">Pedidos pendientes</p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4 border-l-4 border-blue-500">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-100">
+                                <img src="../svg/update_blue.svg"
+                                    alt="Icono Recargar en Preparación" class="w-8 h-8">
+                            </div>
+                            <div>
+                                <p class="text-4xl font-bold text-gray-800">728</p>
+                                <p class="text-sm text-gray-500 mt-1">Pedidos en preparacion</p>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4 border-l-4 border-green-500">
+                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-green-100">
+                                <img src="../svg/check-mark-circle_green.svg"
+                                    alt="Icono Check Entregado" class="w-8 h-8">
+                            </div>
+                            <div>
+                                <p class="text-4xl font-bold text-gray-800">1500</p>
+                                <p class="text-sm text-gray-500 mt-1">Pedidos entregados</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-lg font-semibold text-gray-800">Pedidos recientes</h2>
+                            <div class="flex items-center space-x-3">
+                                <div class="relative w-full max-w-xs">
+                                    <input type="text" id="searchInput" placeholder="Buscar por Empleado..."
+                                        class="w-full p-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                    <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="relative">
+                                    <select id="statusFilter"
+                                        class="p-2 text-sm border border-gray-200 rounded-lg text-gray-600 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white pr-8">
+                                        <option value="all">Filtrar por Estado</option>
+                                        <option value="Complete">Completo</option>
+                                        <option value="Pending">Pendiente</option>
+                                        <option value="Canceled">Cancelado</option>
+                                    </select>
+                                    <div
+                                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20">
+                                            <path
+                                                d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-100">
+                                <thead class="bg-white">
+                                    <tr>
+                                        <th
+                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        </th>
+                                        <th
+                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            ID Pedido</th>
+                                        <th
+                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Empleado</th>
+                                        <th
+                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Mesa</th>
+                                        <th
+                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Cant total</th>
+                                        <th
+                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Precio</th>
+                                        <th
+                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Creacion</th>
+                                        <th
+                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody" class="bg-white divide-y divide-gray-100">
+                                    <tr class="order-row hover:bg-gray-50 transition duration-75" data-status="Complete"
+                                        data-employee-name="John Doe">
+                                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox"
+                                                class="rounded text-blue-600 border-gray-300 w-4 h-4"></td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                            DE124321</td>
+                                        <td class="py-3 px-2 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="user-initials bg-john mr-3">JD</div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-800 employee-name">John Doe
+                                                    </p>
+                                                    <p class="text-xs text-gray-400">johndoe@gmail.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">Software License
+                                        </td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2</td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">$18,50.34</td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2024-06-15</td>
+                                        <td class="py-3 px-2 whitespace-nowrap">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-700">Complete</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="order-row hover:bg-gray-50 transition duration-75" data-status="Canceled"
+                                        data-employee-name="Kierra Franco">
+                                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox"
+                                                class="rounded text-blue-600 border-gray-300 w-4 h-4"></td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                            DE124324</td>
+                                        <td class="py-3 px-2 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="user-initials bg-kierra mr-3">KF</div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-800 employee-name">Kierra
+                                                        Franco</p>
+                                                    <p class="text-xs text-gray-400">kierra@gmail.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">Software License
+                                        </td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">3</td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">$18,50.34</td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2024-06-15</td>
+                                        <td class="py-3 px-2 whitespace-nowrap">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-700">Canceled</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="order-row hover:bg-gray-50 transition duration-75" data-status="Pending"
+                                        data-employee-name="Emerson Workman">
+                                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox"
+                                                class="rounded text-blue-600 border-gray-300 w-4 h-4"></td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                            DE124322</td>
+                                        <td class="py-3 px-2 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="user-initials bg-emerson mr-3">EW</div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-800 employee-name">Emerson
+                                                        Workman
+                                                    </p>
+                                                    <p class="text-xs text-gray-400">emerson@gmail.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">Software License
+                                        </td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">3</td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">$18,50.34</td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2024-06-15</td>
+                                        <td class="py-3 px-2 whitespace-nowrap">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-700">Pending</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="order-row hover:bg-gray-50 transition duration-75" data-status="Complete"
+                                        data-employee-name="Chance Philips">
+                                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox"
+                                                class="rounded text-blue-600 border-gray-300 w-4 h-4"></td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                            DE124323</td>
+                                        <td class="py-3 px-2 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="user-initials bg-chance mr-3">CP</div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-800 employee-name">Chance
+                                                        Philips
+                                                    </p>
+                                                    <p class="text-xs text-gray-400">chance@gmail.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">Software License
+                                        </td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">3</td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">$18,50.34</td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2024-06-15</td>
+                                        <td class="py-3 px-2 whitespace-nowrap">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-700">Complete</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="order-row hover:bg-gray-50 transition duration-75" data-status="Pending"
+                                        data-employee-name="Terry Goldt">
+                                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox"
+                                                class="rounded text-blue-600 border-gray-300 w-4 h-4"></td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                            DE124320</td>
+                                        <td class="py-3 px-2 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="user-initials bg-terry mr-3">TG</div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-800 employee-name">Terry
+                                                        Goldt</p>
+                                                    <p class="text-xs text-gray-400">terry@email.com</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">Software License
+                                        </td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">3</td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">$18,50.34</td>
+                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2024-06-15</td>
+                                        <td class="py-3 px-2 whitespace-nowrap">
+                                            <span
+                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-700">Pending</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="flex justify-between items-center mt-6 text-sm">
+                            <p class="text-gray-600">
+                                Showing <span class="font-semibold text-gray-800">1 to 10</span> of <span
+                                    class="font-semibold text-gray-800">114</span>
+                            </p>
+                            <nav class="flex items-center space-x-1" aria-label="Pagination">
+                                <button
+                                    class="p-2 border border-gray-300 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-50">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                    </svg>
+                                </button>
+                                <button
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-600 text-white font-medium">1</button>
+                                <button
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100">2</button>
+                                <button
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100">3</button>
+                                <span class="px-2 text-gray-500">...</span>
+                                <button
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100">8</button>
+                                <button
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100">9</button>
+                                <button
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100">10</button>
+                                <button class="p-2 border border-gray-300 rounded-lg text-gray-500 hover:bg-gray-100">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                    </svg>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <div id="logoutModal"
+                class="hidden fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+                <div
+                    class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 text-center transform scale-95 opacity-0 transition-all duration-300">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-3">¿Estas seguro de salir?</h2>
+                    <p class="text-gray-500 text-sm mb-6">
+                        Si cierras sesión perderás el acceso inmediato al sistema y deberás ingresar nuevamente.
+                    </p>
+                    <div class="flex justify-center gap-4">
+                        <button id="cancelLogout"
+                            class="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition">
+                            Cerrar
+                        </button>
+                        <button id="confirmLogout"
+                            class="px-6 py-2 rounded-xl bg-indigo-600 text-white font-medium shadow-md hover:bg-indigo-700 transition">
+                            Continuar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <script src="../components/alerts.js"></script>
+            <script src="../components/components.js"></script>
+            <script src="./orders-adm.js"></script>
+            <script>
+                // Inicializar sidebar/topbar/modal
+                initComponents();
+            </script>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
