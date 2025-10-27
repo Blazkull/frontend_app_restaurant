@@ -24,10 +24,18 @@ function renderSidebar(containerId) {
                         Pedidos
                     </a>
                     <a href="../menu/menu.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/calendar.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                        <img src="../svg/cart-moving-blue.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Menú
                     </a>
+                    <a href="../cocina/cocina.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/clock.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                        Cocina
+                    </a>
                     <a href="../mesas/mesas.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+                        <img src="../svg/flag.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                        Mesas Gestion
+                    </a>
+                    <a href="../mesas/mesas_list.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
                         <img src="../svg/flag.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
                         Mesas
                     </a>
