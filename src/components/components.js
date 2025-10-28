@@ -1,8 +1,88 @@
-// Sidebar
+// ======================================================
+// layout.js - Sidebar, Navbar, Roles, JWT y Modal Logout nativo
+// ======================================================
 
+// ======================================================
+// Decodificar token JWT
+// ======================================================
+function parseJwt(token) {
+    try {
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split("")
+                .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+                .join("")
+        );
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error("Error al decodificar el token JWT:", e);
+        return null;
+    }
+}
+
+// ======================================================
+// Configuración de menús por rol
+// ======================================================
+const ROLE_MENUS = {
+    "Administrador": [
+        { name: "Pedidos", icon: "car", link: "../pedidos/pedidos.html" },
+        { name: "Menú", icon: "calendar", link: "../menu/menu.html" },
+        { name: "Mesas", icon: "flag", link: "../mesas/mesas.html" },
+        { name: "Clientes", icon: "clients", link: "../clientes/clientes.html" },
+        { name: "Usuarios", icon: "user", link: "../usuarios/usuarios.html" },
+        { name: "Reportes", icon: "reportes", link: "../reportes/reportes.html" },
+        { name: "Facturación", icon: "ticket", link: "../facturacion/invoices.html" },
+    ],
+    "Mesero": [
+        { name: "Pedidos", icon: "car", link: "../pedidos/pedidos.html" },
+        { name: "Mesas", icon: "flag", link: "../mesas/mesas.html" },
+        { name: "Clientes", icon: "clients", link: "../clientes/clientes.html" },
+    ],
+    "Jefe de Cocina": [
+        { name: "Menú", icon: "calendar", link: "../menu/menu.html" },
+        { name: "Pedidos", icon: "car", link: "../pedidos/pedidos.html" },
+    ],
+    "Cajero": [
+        { name: "Facturación", icon: "ticket", link: "../facturacion/invoices.html" },
+        { name: "Reportes", icon: "reportes", link: "../reportes/reportes.html" },
+    ],
+};
+
+// ======================================================
+// Renderizar Sidebar dinámico
+// ======================================================
 function renderSidebar(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
+    const token = localStorage.getItem("token");
+    let role = "Invitado";
+    let username = localStorage.getItem("username") || "Usuario";
+
+    if (token) {
+        const decoded = parseJwt(token);
+        role = decoded?.role_name || "Invitado";
+        username = decoded?.username || username;
+    }
+
+    const commonLinks = `
+        <a href="../dashboard/dashboard.html" 
+           class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+            <img src="../svg/bars.svg" class="w-5 h-5"> Dashboard
+        </a>
+    `;
+
+    const roleLinks = (ROLE_MENUS[role] || [])
+        .map(
+            (item) => `
+            <a href="${item.link}" 
+               class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
+               <img src="../svg/${item.icon}.svg" class="w-5 h-5"> ${item.name}
+            </a>`
+        )
+        .join("") || `<p class="text-gray-500 px-4">Sin permisos asignados</p>`;
 
     container.innerHTML = `
         <div class="fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col justify-between">
@@ -14,55 +94,21 @@ function renderSidebar(containerId) {
                     <span class="text-gray-900">La Media Luna</span>
                 </div>
 
-                <nav class="flex flex-col gap-1 mt-4 px-2">
-                    <a href="../dashboard/dashboard.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/bars.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
-                        Dashboard
-                    </a>
-                    <a href="../pedidos/pedidos.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/car.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
-                        Pedidos
-                    </a>
-                    <a href="../menu/menu.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/cart-moving-blue.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
-                        Menú
-                    </a>
-                    <a href="../cocina/cocina.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/clock.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
-                        Cocina
-                    </a>
-                    <a href="../mesas/mesas.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/flag.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
-                        Mesas Gestion
-                    </a>
-                    <a href="../mesas/mesas_list.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/flag.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
-                        Mesas
-                    </a>
-                    <a href="../clientes/clientes.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/clients.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
-                        Clientes
-                    </a>
-                    <a href="../usuarios/usuarios.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/user.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
-                        Usuarios
-                    </a>
-                    <a href="../reportes/reportes.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/reportes.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
-                        Reportes
-                    </a>
-                    <a href="../facturacion/invoices.html" class="flex items-center gap-3 p-2 rounded text-gray-700 hover:bg-gray-100 transition">
-                        <img src="../svg/ticket.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
-                        Facturacion
-                    </a>
+                <div class="px-6 pb-2 text-sm text-gray-600">
+                    <span class="font-semibold">Rol:</span> ${role}
+                </div>
 
+                <nav class="flex flex-col gap-1 mt-2 px-2">
+                    ${commonLinks}
+                    ${roleLinks}
                 </nav>
             </div>
 
             <div class="p-4">
-                <button id="sidebarLogout" class="flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg w-full font-medium hover:bg-indigo-700 transition shadow-md">
-                Cerrar Sesión
-                <img src="../svg/exit.svg" alt="logout icon" class="w-5 h-5 text-gray-500">
+                <button id="sidebarLogout" 
+                    class="flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg w-full font-medium hover:bg-indigo-700 transition shadow-md">
+                    Cerrar Sesión
+                    <img src="../svg/exit.svg" class="w-5 h-5">
                 </button>
             </div>
         </div>
@@ -71,103 +117,129 @@ function renderSidebar(containerId) {
     lucide.createIcons();
 }
 
-// Topbar
+// ======================================================
+// Renderizar Topbar
+// ======================================================
 function renderTopbar(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    // Obtener nombre del usuario desde localStorage
     const username = localStorage.getItem("username") || "Usuario";
 
     container.innerHTML = `
-        <header class="sticky top-0 z-10 w-full bg-white shadow-sm border-b border-gray-100">
-            <div class="flex justify-end items-center h-16 px-6">
-                <div class="relative">
-                    <button id="userMenuButton"
-                        class="flex items-center gap-2 cursor-pointer p-1 rounded-full hover:bg-gray-50 transition focus:outline-none">
-                        <div class="flex items-center gap-3">
-                            <img src="https://cdn-icons-png.flaticon.com/128/6676/6676016.png" alt="User Avatar"
-                                class="w-8 h-8 rounded-full object-cover ring-2 ring-blue-500 ring-offset-2" />
-                            <span id="userName" class="text-gray-800 font-medium text-sm hidden sm:block">${username}</span>
-                        </div>
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-
-                    <div id="userMenu"
-                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50">
-                        <ul class="py-2 text-sm text-gray-700">
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Perfil</a></li>
-                            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100">Configuración</a></li>
-                            <li><a href="#" id="menuLogout" class="block px-4 py-2 text-red-600 hover:bg-red-100">Cerrar sesión</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </header>
+        <div class="w-full bg-white border-b border-gray-200 p-4 flex justify-between items-center shadow-sm">
+            <h1 class="text-lg font-semibold text-gray-700">Bienvenido, ${username}</h1>
+            <button id="openLogoutModal" 
+                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
+                Cerrar Sesión
+            </button>
+        </div>
     `;
-
-    lucide.createIcons();
-
-    const userMenuButton = document.getElementById("userMenuButton");
-    const userMenu = document.getElementById("userMenu");
-
-    userMenuButton.addEventListener("click", () => {
-        userMenu.classList.toggle("hidden");
-    });
-
-    document.addEventListener("click", (e) => {
-        if (!userMenuButton.contains(e.target) && !userMenu.contains(e.target)) {
-            userMenu.classList.add("hidden");
-        }
-    });
 }
 
-// Logout Modal
+// ======================================================
+// Modal Logout funcional
+// ======================================================
 function initLogoutModal() {
     const logoutModal = document.getElementById("logoutModal");
     const cancelLogout = document.getElementById("cancelLogout");
     const confirmLogout = document.getElementById("confirmLogout");
-    const sidebarLogout = document.getElementById("sidebarLogout");
-    const menuLogout = document.getElementById("menuLogout");
 
-    const showModal = () => {
-        logoutModal.classList.remove("hidden");
-        const modalContent = logoutModal.querySelector("div");
-        setTimeout(() => {
-            modalContent.classList.remove("scale-95", "opacity-0");
-            modalContent.classList.add("scale-100", "opacity-100");
-        }, 50);
-    };
+    if (!logoutModal) return;
 
-    const hideModal = () => {
-        const modalContent = logoutModal.querySelector("div");
-        modalContent.classList.remove("scale-100", "opacity-100");
-        modalContent.classList.add("scale-95", "opacity-0");
-        setTimeout(() => {
-            logoutModal.classList.add("hidden");
-        }, 300);
-    };
-
-    sidebarLogout?.addEventListener("click", showModal);
-    menuLogout?.addEventListener("click", (e) => {
-        e.preventDefault();
-        showModal();
+    // Abrir modal desde botones de topbar o sidebar
+    document.addEventListener("click", (e) => {
+        if (e.target.id === "openLogoutModal" || e.target.id === "sidebarLogout") {
+            showLogoutModal();
+        }
     });
-    cancelLogout?.addEventListener("click", hideModal);
+
+    // Cerrar modal
+    cancelLogout?.addEventListener("click", hideLogoutModal);
+
+    // Confirmar cierre de sesión
     confirmLogout?.addEventListener("click", () => {
+        // Eliminamos solo los datos del usuario
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+
+        hideLogoutModal();
+
+        // Redirigir al login
         window.location.href = "../login/login.html";
     });
-    logoutModal?.addEventListener("click", (e) => {
-        if (e.target === logoutModal) hideModal();
-    });
+
+    function showLogoutModal() {
+        logoutModal.classList.remove("hidden");
+        setTimeout(() => {
+            const modalContent = logoutModal.querySelector("div > div");
+            if (modalContent) modalContent.classList.remove("scale-95", "opacity-0");
+        }, 10);
+    }
+
+    function hideLogoutModal() {
+        const modalContent = logoutModal.querySelector("div > div");
+        if (modalContent) modalContent.classList.add("scale-95", "opacity-0");
+        setTimeout(() => logoutModal.classList.add("hidden"), 200);
+    }
 }
 
+// ======================================================
+// Protección de páginas por rol
+// ======================================================
+function protectPage(role) {
+    const path = window.location.pathname;
+    const fileName = path.substring(path.lastIndexOf("/") + 1);
+
+    const allowedPaths = ["dashboard.html"];
+    const roleMenus = ROLE_MENUS[role] || [];
+    roleMenus.forEach((item) => {
+        allowedPaths.push(item.link.split("/").pop());
+    });
+
+    if (!allowedPaths.includes(fileName)) {
+        window.location.href = "../../notificaciones/404/404.html";
+    }
+}
+
+// ======================================================
 // Inicializador global
+// ======================================================
 function initComponents() {
+    const token = localStorage.getItem("token");
+
+    // Si no hay token, redirigir a login
+    if (!token) {
+        window.location.href = "../login/login.html";
+        return;
+    }
+
+    const decoded = parseJwt(token);
+    if (!decoded) {
+        console.warn("Token inválido, redirigiendo al login...");
+        localStorage.removeItem("token");
+        window.location.href = "../login/login.html";
+        return;
+    }
+
+    // Validar expiración del token
+    const now = Math.floor(Date.now() / 1000);
+    if (decoded.exp && decoded.exp < now) {
+        console.warn("Token expirado, redirigiendo al login...");
+        localStorage.removeItem("token");
+        window.location.href = "../login/login.html";
+        return;
+    }
+
+    const role = decoded?.role_name || "Invitado";
+
     renderSidebar("sidebar");
     renderTopbar("topbar");
     initLogoutModal();
+    protectPage(role);
 }
+
+// ======================================================
+// Autoejecutar al cargar la página
+// ======================================================
+document.addEventListener("DOMContentLoaded", initComponents);

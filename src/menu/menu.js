@@ -1,565 +1,412 @@
 import api from "../api/api.js";
 import showAlert from "../components/alerts.js";
 
-const menuGrid = document.getElementById("menu-grid");
-const categoryContainer = document.getElementById("category-container");
-const orderList = document.getElementById("order-list");
-const sendOrderBtn = document.getElementById("send-order-btn");
-const tableTitle = document.getElementById("table-title");
-const totalAmountElement = document.getElementById("total-amount");
+// ======================================================
+// Variables globales
+// ======================================================
+const tableBody = document.getElementById("product-list");
+const modal = document.getElementById("product-modal");
+const modalContent = document.getElementById("product-modal-content");
+const deleteModal = document.getElementById("delete-modal");
+const deleteModalContent = document.getElementById("delete-modal-content");
+const form = document.getElementById("product-form");
+const btnCrear = document.getElementById("btn-crear-producto");
+const btnCancelar = document.getElementById("btn-cancelar");
+const btnDeleteCancelar = document.getElementById("btn-delete-cancelar");
+const btnDeleteConfirmar = document.getElementById("btn-delete-confirmar");
+const toggleDeletedBtn = document.getElementById("btn-toggle-deleted");
 
-// Datos globales
-let categoriesData = [];
-let productsData = [];
-let currentOrder = [];
-let currentTable = null;
-let currentOrderId = null; // Para tracking de orden abierta
+const modalTitle = document.getElementById("modal-title");
+const submitBtn = document.getElementById("btn-submit");
+const fileInput = document.getElementById("file-upload");
+const imagePreview = document.getElementById("image-preview");
+const selectCategoria = document.getElementById("categoria");
 
-// =========================================================
-// CARGA DE CATEGORÍAS DESDE EL BACKEND
-// =========================================================
-async function fetchCategories() {
+let currentEditId = null;
+let showingDeleted = false;
+let categories = []; // Guardará las categorías cargadas del backend
+
+// ✅ BASE URL del backend
+// Si usas api.js con baseURL configurada, puedes reutilizarla:
+const BASE_URL = api.defaults.baseURL.replace("/api", ""); 
+
+
+// ======================================================
+// Cargar categorías dinámicamente
+// ======================================================
+async function loadCategories() {
   try {
-    console.log("🔍 Obteniendo categorías...");
-    console.log("📡 URL:", `${api.defaults.baseURL}/categories`);
-    
-    const response = await api.get("/categories", {
-      params: {
-        offset: 0,
-        limit: 50,
-        status_filter: "Activo" // Solo categorías activas
-      },
-    });
+    const response = await api.get("/categories");
+    categories = response.data.data || [];
 
-    console.log("📦 Respuesta completa de categorías:", response.data);
+    selectCategoria.innerHTML = "";
 
-    // La API devuelve un objeto genérico, intentar diferentes estructuras
-    let items = [];
-    
-    if (response.data.items) {
-      items = response.data.items;
-    } else if (response.data.data) {
-      items = response.data.data;
-    } else if (response.data.categories) {
-      items = response.data.categories;
-    } else if (Array.isArray(response.data)) {
-      items = response.data;
-    } else {
-      // Si no podemos encontrar el array, intentar buscar en las propiedades del objeto
-      const possibleArrays = Object.values(response.data).filter(val => Array.isArray(val));
-      if (possibleArrays.length > 0) {
-        items = possibleArrays[0];
-      } else {
-        console.warn("⚠️ No se encontró un array en la respuesta, usando estructura completa");
-        // Si la respuesta tiene claves que son objetos con id y name, convertirlos
-        items = Object.values(response.data).filter(item => 
-          item && typeof item === 'object' && 'id' in item && 'name' in item
-        );
-      }
-    }
-    
-    if (!Array.isArray(items) || items.length === 0) {
-      console.warn("⚠️ No se encontraron categorías, mostrando opción 'Todos'");
-      throw new Error("No se encontraron categorías en la respuesta");
-    }
-
-    // Agregar opción "Todos" al inicio
-    categoriesData = [
-      { id: null, name: "Todos", active: true },
-      ...items.map((cat, index) => ({
-        id: cat.id,
-        name: cat.name,
-        description: cat.description || "",
-        active: false
-      }))
-    ];
-
-    console.log(`✅ ${categoriesData.length} categorías cargadas:`, categoriesData);
-    
-    renderCategories(categoriesData);
-    
-    // Cargar todos los items inicialmente (categoría "Todos")
-    await fetchMenuItems(null);
-  } catch (error) {
-    console.error("❌ Error al obtener categorías:", error);
-    console.error("📋 Detalles del error:", {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      url: error.config?.url,
-      method: error.config?.method
-    });
-    
-    // Verificar si es un error de autenticación
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      showAlert({
-        type: "error",
-        title: "Sesión expirada",
-        message: "Por favor, inicia sesión nuevamente.",
-      });
+    if (categories.length === 0) {
+      selectCategoria.innerHTML = `<option value="">Sin categorías</option>`;
       return;
     }
-    
-    // Categoría por defecto en caso de error
-    categoriesData = [{ id: null, name: "Todos", active: true }];
-    renderCategories(categoriesData);
-    
-    // Intentar cargar items sin filtro de categoría
-    await fetchMenuItems(null);
-    
-    // Mostrar alerta solo si no es un error de red común
-    if (error.response?.status === 500) {
-      showAlert({
-        type: "warning",
-        title: "Advertencia",
-        message: "Error del servidor al cargar categorías. Mostrando todos los items disponibles.",
-      });
-    }
+
+    selectCategoria.innerHTML = `<option value="">Seleccionar categoría</option>`;
+    categories.forEach((cat) => {
+      const option = document.createElement("option");
+      option.value = cat.id;
+      option.textContent = cat.name;
+      selectCategoria.appendChild(option);
+    });
+  } catch (error) {
+    console.error("❌ Error al cargar categorías:", error);
+    selectCategoria.innerHTML = `<option value="">Error al cargar categorías</option>`;
   }
 }
 
-// =========================================================
-// CARGA DE ÍTEMS DE MENÚ
-// =========================================================
-async function fetchMenuItems(categoryId = null) {
+// ======================================================
+// Cargar ítems del menú (activos)
+// ======================================================
+async function loadMenuItems() {
   try {
-    console.log(`🔍 Obteniendo items del menú${categoryId ? ` (categoría ${categoryId})` : ''}...`);
-    
-    const params = {
-      page: 1,
-      page_size: 50,
-      status_id: 1, // Solo items activos (ajusta según tu BD)
-    };
-    
-    if (categoryId) {
-      params.category_id = categoryId;
+    if (showingDeleted) {
+      await loadDeletedMenuItems();
+      return;
     }
 
-    const response = await api.get("/menu_items", { params });
-    
-    // La respuesta tiene estructura: { items: [...], total_items, page, page_size, total_pages }
+    const response = await api.get("/menu_items");
     const items = response.data.items || [];
-
-    productsData = items.map((item) => ({
-      id: item.id,
-      id_category: item.id_category,
-      name: item.name,
-      price: parseFloat(item.price),
-      description: item.ingredients || "Sin descripción",
-      time_preparation: item.estimated_time || 0,
-      // Si no hay imagen, usar un SVG placeholder en lugar de una ruta que no existe
-      image: item.image_url || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%23f3f4f6%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%239ca3af%22 font-family=%22Arial%22 font-size=%2224%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ESin imagen%3C/text%3E%3C/svg%3E',
-      status_id: item.id_status,
-    }));
-
-    console.log(`✅ ${productsData.length} items cargados`);
-    renderMenuProducts(productsData);
+    renderMenuTable(items, false);
   } catch (error) {
-    console.error("❌ Error al obtener ítems del menú:", error);
-    menuGrid.innerHTML =
-      '<p class="text-red-500 italic col-span-full text-center py-8">Error al cargar los ítems del menú.</p>';
+    console.error("Error al cargar los ítems del menú:", error);
+    showAlert("error", "Error al cargar los ítems del menú. Intenta nuevamente.");
   }
 }
 
-// =========================================================
-// RENDERIZAR CATEGORÍAS
-// =========================================================
-function renderCategories(categories) {
-  categoryContainer.innerHTML = "";
-
-  categories.forEach((cat) => {
-    const button = document.createElement("button");
-    button.textContent = cat.name;
-    button.className = `px-4 py-2 rounded-full text-sm font-medium transition-all ${
-      cat.active
-        ? "bg-indigo-600 text-white shadow-md"
-        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-    }`;
-
-    button.addEventListener("click", async () => {
-      // Actualizar estado activo
-      categories.forEach((c) => (c.active = c.id === cat.id));
-      renderCategories(categories);
-      await fetchMenuItems(cat.id);
-    });
-
-    categoryContainer.appendChild(button);
-  });
+// ======================================================
+// Cargar ítems eliminados
+// ======================================================
+async function loadDeletedMenuItems() {
+  try {
+    const response = await api.get("/menu_items/deleted");
+    const items = response.data.items || [];
+    renderMenuTable(items, true);
+  } catch (error) {
+    console.error("Error al cargar los ítems eliminados:", error);
+    showAlert("error", "Error al cargar los ítems eliminados. Intenta nuevamente.");
+  }
 }
 
-// =========================================================
-// RENDERIZAR PRODUCTOS DEL MENÚ
-// =========================================================
-function renderMenuProducts(products) {
-  menuGrid.innerHTML = "";
+// ======================================================
+// Renderizar tabla de productos
+// ======================================================
+function renderMenuTable(items, isDeleted) {
+  tableBody.innerHTML = "";
 
-  if (!products.length) {
-    menuGrid.innerHTML =
-      '<p class="text-gray-500 italic col-span-full text-center py-8">No hay productos disponibles en esta categoría.</p>';
+  if (items.length === 0) {
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="9" class="text-center py-4 text-gray-500">
+                ${isDeleted ? "No hay productos eliminados." : "No hay ítems disponibles en el menú."}
+            </td>
+        </tr>`;
     return;
   }
 
-  products.forEach((product) => {
-    const card = document.createElement("div");
-    card.className =
-      "bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between hover:shadow-lg transition-shadow";
+  items.forEach((item) => {
+    const categoryName =
+      categories.find((cat) => cat.id === item.id_category)?.name || "Sin categoría";
 
-    card.innerHTML = `
-      <img src="${product.image}" alt="${product.name}" 
-           class="h-40 w-full object-cover bg-gray-200"
-           onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22%3E%3Crect fill=%22%23f3f4f6%22 width=%22200%22 height=%22200%22/%3E%3Ctext fill=%22%239ca3af%22 font-family=%22Arial%22 font-size=%2216%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22%3ESin imagen%3C/text%3E%3C/svg%3E'">
-      <div class="p-4 flex flex-col gap-2">
-        <h3 class="text-lg font-bold text-gray-800">${product.name}</h3>
-        <p class="text-indigo-600 font-semibold text-xl">$${product.price.toLocaleString()}</p>
-        <p class="text-sm text-gray-600 line-clamp-2">${product.description}</p>
-        <div class="flex items-center gap-1 text-xs text-gray-400">
-          <i data-lucide="clock" class="w-4 h-4"></i>
-          <span>${product.time_preparation} min</span>
-        </div>
-        <div class="flex items-center justify-between mt-3 pt-3 border-t">
-          <div class="flex items-center gap-3">
-            <button class="decrease bg-gray-200 text-gray-700 w-8 h-8 rounded-lg hover:bg-gray-300 transition font-bold">
-              -
-            </button>
-            <span class="quantity text-gray-800 font-semibold text-lg min-w-[20px] text-center">0</span>
-            <button class="increase bg-gray-200 text-gray-700 w-8 h-8 rounded-lg hover:bg-gray-300 transition font-bold">
-              +
-            </button>
-          </div>
-          <button class="add-btn bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-sm">
-            Agregar
-          </button>
-        </div>
-      </div>
-    `;
+    // ✅ Asegurar ruta completa de la imagen
+    const imageSrc =
+      item.image_url && item.image_url !== "string"
+        ? `${BASE_URL}${item.image_url}`
+        : "https://via.placeholder.com/80";
 
-    const qtySpan = card.querySelector(".quantity");
-    const decreaseBtn = card.querySelector(".decrease");
-    const increaseBtn = card.querySelector(".increase");
-    const addBtn = card.querySelector(".add-btn");
-
-    let quantity = 0;
-
-    decreaseBtn.addEventListener("click", () => {
-      if (quantity > 0) {
-        quantity--;
-        qtySpan.textContent = quantity;
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td class="px-3 py-2"><input type="checkbox" class="rounded text-indigo-600"></td>
+        <td class="px-3 py-2">
+            <img src="${imageSrc}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover">
+        </td>
+        <td class="px-3 py-2 font-medium text-gray-800">${item.name}</td>
+        <td class="px-3 py-2">${categoryName}</td>
+        <td class="px-3 py-2">${item.estimated_time || "N/A"}</td>
+        <td class="px-3 py-2">$${Number(item.price || 0).toLocaleString()}</td>
+        <td class="px-3 py-2">
+            <span class="px-2 py-1 rounded-full text-xs font-semibold ${item.id_status === 1
+        ? "bg-green-100 text-green-800"
+        : "bg-red-100 text-red-800"
+      }">
+                ${item.id_status === 1 ? "Disponible" : "Inactivo"}
+            </span>
+        </td>
+        <td class="px-3 py-2">${new Date(item.created_at).toLocaleDateString()}</td>
+        <td class="px-3 py-2 space-x-2">
+            ${isDeleted
+        ? `
+                    <button class="text-green-600 hover:text-green-800 restore-btn" data-id="${item.id}">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                    </button>`
+        : `
+                    <button class="text-indigo-600 hover:text-indigo-800 edit-btn" data-id="${item.id}">
+                        <i data-lucide="edit-3" class="w-5 h-5"></i>
+                    </button>
+                    <button class="text-red-600 hover:text-red-800 delete-btn" data-id="${item.id}">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>`
       }
-    });
-
-    increaseBtn.addEventListener("click", () => {
-      quantity++;
-      qtySpan.textContent = quantity;
-    });
-
-    addBtn.addEventListener("click", () => {
-      if (quantity > 0) {
-        addToOrder(product, quantity);
-        quantity = 0;
-        qtySpan.textContent = quantity;
-      } else {
-        showAlert({
-          type: "info",
-          title: "Cantidad inválida",
-          message: "Debes seleccionar al menos 1 unidad.",
-        });
-      }
-    });
-
-    menuGrid.appendChild(card);
-  });
-
-  // Inicializar iconos de Lucide
-  if (window.lucide) {
-    lucide.createIcons();
-  }
-}
-
-// =========================================================
-// GESTIÓN DE COMANDA
-// =========================================================
-function addToOrder(product, qty) {
-  const existing = currentOrder.find((item) => item.id === product.id);
-  
-  if (existing) {
-    existing.quantity += qty;
-  } else {
-    currentOrder.push({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: qty,
-      note: "", // Podrías agregar un campo para notas
-    });
-  }
-  
-  renderOrder();
-  
-  // Feedback visual
-  showNotification(`${product.name} agregado (x${qty})`, "success");
-}
-
-function removeFromOrder(productId) {
-  currentOrder = currentOrder.filter((item) => item.id !== productId);
-  renderOrder();
-}
-
-function updateQuantity(productId, newQuantity) {
-  const item = currentOrder.find((i) => i.id === productId);
-  if (item) {
-    if (newQuantity <= 0) {
-      removeFromOrder(productId);
-    } else {
-      item.quantity = newQuantity;
-      renderOrder();
-    }
-  }
-}
-
-function renderOrder() {
-  orderList.innerHTML = "";
-
-  if (currentOrder.length === 0) {
-    orderList.innerHTML =
-      '<p class="text-gray-500 italic text-center py-4">La comanda está vacía.</p>';
-    sendOrderBtn.disabled = true;
-    if (totalAmountElement) totalAmountElement.textContent = "$0";
-    return;
-  }
-
-  let total = 0;
-
-  currentOrder.forEach((item) => {
-    const itemTotal = item.price * item.quantity;
-    total += itemTotal;
-
-    const li = document.createElement("li");
-    li.className =
-      "flex justify-between items-center border-b pb-3 mb-3 text-sm";
-    
-    li.innerHTML = `
-      <div class="flex-1">
-        <p class="font-medium text-gray-800">${item.name}</p>
-        <div class="flex items-center gap-2 mt-1">
-          <button class="qty-decrease text-gray-500 hover:text-gray-700" data-id="${item.id}">
-            <i data-lucide="minus-circle" class="w-4 h-4"></i>
-          </button>
-          <span class="text-xs text-gray-600 font-semibold">x${item.quantity}</span>
-          <button class="qty-increase text-gray-500 hover:text-gray-700" data-id="${item.id}">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-          </button>
-        </div>
-      </div>
-      <div class="text-right">
-        <p class="font-semibold text-indigo-600">$${itemTotal.toLocaleString()}</p>
-        <button class="remove-item text-red-500 hover:text-red-700 text-xs mt-1" data-id="${item.id}">
-          Eliminar
-        </button>
-      </div>
+        </td>
     `;
-    
-    orderList.appendChild(li);
+    tableBody.appendChild(row);
   });
 
-  // Eventos para botones de cantidad
-  orderList.querySelectorAll(".qty-decrease").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const id = parseInt(e.currentTarget.dataset.id);
-      const item = currentOrder.find((i) => i.id === id);
-      if (item) updateQuantity(id, item.quantity - 1);
-    });
-  });
-
-  orderList.querySelectorAll(".qty-increase").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const id = parseInt(e.currentTarget.dataset.id);
-      const item = currentOrder.find((i) => i.id === id);
-      if (item) updateQuantity(id, item.quantity + 1);
-    });
-  });
-
-  orderList.querySelectorAll(".remove-item").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const id = parseInt(e.currentTarget.dataset.id);
-      removeFromOrder(id);
-    });
-  });
-
-  // Actualizar total
-  if (totalAmountElement) {
-    totalAmountElement.textContent = `$${total.toLocaleString()}`;
-  }
-
-  sendOrderBtn.disabled = false;
-
-  // Reinicializar iconos
-  if (window.lucide) {
-    lucide.createIcons();
-  }
+  lucide.createIcons();
+  if (isDeleted) attachRestoreListeners();
+  else attachEventListeners();
 }
 
-// =========================================================
-// ENVIAR COMANDA AL BACKEND
-// =========================================================
-async function sendOrder() {
-  if (!currentOrder.length) {
-    showAlert({
-      type: "info",
-      title: "Comanda vacía",
-      message: "Agrega productos antes de enviar.",
-    });
+// ======================================================
+// Alternar entre activos / eliminados
+// ======================================================
+toggleDeletedBtn.addEventListener("click", async () => {
+  showingDeleted = !showingDeleted;
+  toggleDeletedBtn.textContent = showingDeleted ? "Ver activos" : "Ver eliminados";
+  if (showingDeleted) await loadDeletedMenuItems();
+  else await loadMenuItems();
+});
+
+// ======================================================
+// Crear o actualizar ítem (Estrategia Dual)
+// ======================================================
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const nombre = document.getElementById("nombre").value.trim();
+  const tiempo = parseInt(document.getElementById("tiempo").value) || 0;
+  const precio = parseFloat(document.getElementById("precio").value) || 0;
+  const estado = document.getElementById("estado").value === "Disponible" ? 1 : 2;
+  const categoria = parseInt(document.getElementById("categoria").value);
+  const imagen = document.getElementById("file-upload").files[0];
+
+  if (!nombre) {
+    showAlert("error", "El nombre del producto es obligatorio.");
+    return;
+  }
+  if (isNaN(categoria) || categoria === 0) {
+    showAlert("error", "Debes seleccionar una categoría válida.");
     return;
   }
 
-  if (!currentTable) {
-    showAlert({
-      type: "error",
-      title: "Mesa no seleccionada",
-      message: "Debes seleccionar una mesa antes de enviar el pedido.",
-    });
-    return;
-  }
+  const data = {
+    name: nombre,
+    id_category: categoria,
+    ingredients: "",
+    estimated_time: tiempo,
+    price: precio,
+    id_status: estado,
+  };
 
   try {
-    // Deshabilitar botón mientras se envía
-    sendOrderBtn.disabled = true;
-    sendOrderBtn.innerHTML = '<span class="animate-pulse">Enviando...</span>';
+    let response;
+    if (!imagen) {
+      if (currentEditId) {
+        response = await api.patch(`/menu_items/${currentEditId}`, data);
+      } else {
+        response = await api.post("/menu_items", data);
+      }
+    } else {
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("id_category", data.id_category.toString());
+      formData.append("ingredients", data.ingredients);
+      formData.append("estimated_time", data.estimated_time.toString());
+      formData.append("price", data.price.toFixed(1));
+      formData.append("id_status", data.id_status.toString());
+      formData.append("image", imagen);
 
-    // Calcular total
-    const totalValue = currentOrder.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
+      if (currentEditId) {
+        response = await api.patch(`/menu_items/${currentEditId}`, formData);
+      } else {
+        response = await api.post("/menu_items", formData);
+      }
+    }
 
-    // Preparar items en el formato que espera la API
-    const items = currentOrder.map((item) => ({
-      id_menu_item: item.id,
-      quantity: item.quantity,
-      note: item.note || "",
-      price_at_order: item.price,
-    }));
+    const successMsg = currentEditId ? "Producto actualizado correctamente" : "Producto creado correctamente";
+    showAlert("success", successMsg);
 
-    // Crear la orden con items
-    // Endpoint: POST /api/orders
-    const orderData = {
-    id_table: parseInt(currentTable),
-    id_status: 2, // Pendiente (ajustar según tu backend)
-    id_user_created: parseInt(localStorage.getItem("user_id")) || 1,
-    total_value: totalValue,
-    items: currentOrder.map(item => ({
-        id_menu_item: item.id,
-        quantity: item.quantity,
-        note: item.note || "",
-        price_at_order: item.price,
-    })),
-    };
-
-
-    console.log("📤 Enviando orden:", orderData);
-
-    const response = await api.post("/orders", orderData);
-
-    console.log("✅ Orden creada:", response.data);
-
-    // Mostrar alerta de éxito
-    await showAlert({
-      title: "¡Pedido enviado!",
-      message: `Orden #${response.data.id} enviada correctamente a cocina.`,
-      type: "success",
-    });
-
-    // Limpiar comanda
-    currentOrder = [];
-    currentOrderId = response.data.id;
-    renderOrder();
-
+    modal.classList.add("hidden");
+    form.reset();
+    if (imagePreview) imagePreview.src = "https://via.placeholder.com/80";
+    currentEditId = null;
+    loadMenuItems();
   } catch (error) {
-    console.error("❌ Error al enviar orden:", error);
-    
-    const errorMsg = error.response?.data?.detail || "No se pudo enviar el pedido.";
-    
-    showAlert({
-      title: "Error al enviar",
-      message: errorMsg,
-      type: "error",
-    });
-
-    // Restaurar botón
-    sendOrderBtn.disabled = false;
-    sendOrderBtn.textContent = "Enviar pedido";
+    console.error("Error al guardar producto:", error);
+    if (error.response && error.response.status === 422) {
+      const field = error.response.data.detail[0]?.loc[1];
+      const msg = field ? `Error de validación en el campo: ${field}` : 'Campos requeridos faltantes o inválidos.';
+      showAlert("error", `Error (422): ${msg}`);
+    } else {
+      showAlert("error", "Error al guardar el producto. Intenta nuevamente.");
+    }
   }
+});
+
+// ======================================================
+// Editar producto
+// ======================================================
+function attachEventListeners() {
+  document.querySelectorAll(".edit-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      try {
+        const response = await api.get(`/menu_items/${id}`);
+        const item = response.data;
+
+        currentEditId = item.id;
+        document.getElementById("nombre").value = item.name || "";
+        document.getElementById("tiempo").value = item.estimated_time || "";
+        document.getElementById("precio").value = item.price || "";
+        document.getElementById("estado").value =
+          item.id_status === 1 ? "Disponible" : "Desactivado";
+
+        await loadCategories();
+        selectCategoria.value = item.id_category || "";
+
+        if (imagePreview) {
+          imagePreview.src =
+            item.image_url && item.image_url !== "string"
+              ? `${BASE_URL}${item.image_url}`
+              : "https://via.placeholder.com/80";
+        }
+
+        modalTitle.textContent = "Editar producto";
+        submitBtn.textContent = "Actualizar";
+        openModal(modal, modalContent);
+      } catch (error) {
+        console.error("Error al cargar producto:", error);
+        showAlert("error", "Error al cargar los datos del producto.");
+      }
+    });
+  });
+
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      document.getElementById("delete-product-id").value = id;
+      openModal(deleteModal, deleteModalContent);
+    });
+  });
 }
 
-// =========================================================
-// OBTENER/ESTABLECER MESA ACTUAL
-// =========================================================
-function setTableInfo() {
-  // Prioridad: URL > localStorage > null
-  const urlParams = new URLSearchParams(window.location.search);
-  const tableFromUrl = urlParams.get('table');
-  const tableFromStorage = localStorage.getItem("current_table");
-  const tableNameFromStorage = localStorage.getItem("current_table_name");
-  
-  currentTable = tableFromUrl || tableFromStorage || null;
+// ======================================================
+// Restaurar producto eliminado
+// ======================================================
+function attachRestoreListeners() {
+  document.querySelectorAll(".restore-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
 
-  if (currentTable) {
-    // Guardar en localStorage para persistencia
-    localStorage.setItem("current_table", currentTable);
-    
-    const tableName = tableNameFromStorage || `Mesa ${currentTable}`;
-    tableTitle.textContent = `COMANDA - ${tableName}`;
-    tableTitle.classList.add("text-indigo-600");
-    
-    console.log(`📍 Mesa seleccionada: ${tableName} (ID: ${currentTable})`);
-  } else {
-    tableTitle.textContent = "⚠️ Mesa no seleccionada";
-    tableTitle.classList.add("text-red-600");
-    console.warn("⚠️ No se ha seleccionado una mesa");
-    
-    // Mostrar alerta
-    showAlert({
-      type: "warning",
-      title: "Mesa no seleccionada",
-      message: "Por favor, selecciona una mesa desde el mapa de mesas.",
+      const confirm = await Swal.fire({
+        title: "¿Restaurar producto?",
+        text: "El producto volverá a estar disponible.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#16a34a",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, restaurar",
+        cancelButtonText: "Cancelar",
+      });
+
+      if (confirm.isConfirmed) {
+        try {
+          await api.patch(`/menu_items/${id}/restore`);
+          showAlert("success", "Producto restaurado correctamente");
+          loadDeletedMenuItems();
+        } catch (error) {
+          console.error("Error al restaurar producto:", error);
+          showAlert("error", "Error al restaurar el producto.");
+        }
+      }
     });
-  }
+  });
 }
 
-// =========================================================
-// NOTIFICACIÓN RÁPIDA
-// =========================================================
-function showNotification(message, type = "info") {
-  const notification = document.createElement("div");
-  notification.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium z-50 transform transition-all duration-300 ${
-    type === "success" ? "bg-green-500" : "bg-blue-500"
-  }`;
-  notification.textContent = message;
+// ======================================================
+// Eliminar producto
+// ======================================================
+btnDeleteConfirmar.addEventListener("click", async () => {
+  const id = document.getElementById("delete-product-id").value;
+  try {
+    await api.delete(`/menu_items/${id}`);
+    showAlert("success", "Producto eliminado correctamente");
+    closeModal(deleteModal, deleteModalContent);
+    loadMenuItems();
+  } catch (error) {
+    console.error("Error al eliminar producto:", error);
+    showAlert("error", "Error al eliminar el producto.");
+  }
+});
 
-  document.body.appendChild(notification);
+// ======================================================
+// Vista previa de imagen
+// ======================================================
+if (fileInput) {
+  fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file && imagePreview) {
+      const reader = new FileReader();
+      reader.onload = (event) => (imagePreview.src = event.target.result);
+      reader.readAsDataURL(file);
+    }
+  });
+}
 
+// ======================================================
+// Buscar productos
+// ======================================================
+document.getElementById("input-search").addEventListener("input", (e) => {
+  const query = e.target.value.toLowerCase();
+  document.querySelectorAll("#product-list tr").forEach((row) => {
+    const name = row.querySelector("td:nth-child(3)")?.textContent.toLowerCase() || "";
+    row.style.display = name.includes(query) ? "" : "none";
+  });
+});
+
+// ======================================================
+// Control de modales
+// ======================================================
+btnCrear.addEventListener("click", async () => {
+  form.reset();
+  currentEditId = null;
+  if (imagePreview) imagePreview.src = "https://via.placeholder.com/80";
+  await loadCategories();
+  modalTitle.textContent = "Crear producto";
+  submitBtn.textContent = "Crear";
+  openModal(modal, modalContent);
+});
+
+btnCancelar.addEventListener("click", () => {
+  form.reset();
+  if (imagePreview) imagePreview.src = "https://via.placeholder.com/80";
+  closeModal(modal, modalContent);
+});
+
+btnDeleteCancelar.addEventListener("click", () => closeModal(deleteModal, deleteModalContent));
+
+function openModal(modal, content) {
+  modal.classList.remove("hidden");
   setTimeout(() => {
-    notification.style.transform = "translateX(400px)";
-    notification.style.opacity = "0";
-    setTimeout(() => notification.remove(), 300);
-  }, 2000);
+    content.classList.add("scale-100", "opacity-100");
+    content.classList.remove("scale-95", "opacity-0");
+  }, 50);
 }
 
-// =========================================================
-// EVENTO: ENVIAR PEDIDO
-// =========================================================
-if (sendOrderBtn) {
-  sendOrderBtn.addEventListener("click", sendOrder);
+function closeModal(modal, content) {
+  content.classList.remove("scale-100", "opacity-100");
+  content.classList.add("scale-95", "opacity-0");
+  setTimeout(() => modal.classList.add("hidden"), 200);
 }
 
-// =========================================================
-// INICIALIZACIÓN
-// =========================================================
+// ======================================================
+// Inicialización
+// ======================================================
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log("🚀 Inicializando módulo de menú...");
-  
-  setTableInfo();
-  await fetchCategories();
-  
-  console.log("✅ Módulo de menú inicializado");
+  await loadCategories();
+  await loadMenuItems();
 });

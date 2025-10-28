@@ -24,42 +24,42 @@
             <main class="p-6 overflow-y-auto mt-16">
                 <div class="p-6">
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="card-container w-full px-4 sm:px-6 lg:px-8 mx-auto">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
 
-                        <div
-                            class="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4 border-l-4 border-yellow-500">
-                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100">
-                                <img src="../svg/clock_yellow.svg"
-                                    alt="Icono Reloj Pendiente" class="w-8 h-8">
+                            <div class="card bg-green-50 p-4 rounded-xl shadow flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-sm text-green-800 font-semibold">Completados</h4>
+                                    <p id="count-complete" class="text-2xl font-bold text-green-700">0</p>
+                                </div>
+                                <img class="w-8 h-8" src="../svg/check-mark-circle_green.svg"
+                                    alt="Icono Check Entregado">
                             </div>
-                            <div>
-                                <p class="text-4xl font-bold text-gray-800">12,384</p>
-                                <p class="text-sm text-gray-500 mt-1">Pedidos pendientes</p>
-                            </div>
-                        </div>
 
-                        <div
-                            class="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4 border-l-4 border-blue-500">
-                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-blue-100">
-                                <img src="../svg/update_blue.svg"
-                                    alt="Icono Recargar en Preparación" class="w-8 h-8">
+                            <div class="card bg-yellow-50 p-4 rounded-xl shadow flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-sm text-yellow-800 font-semibold">Pendientes</h4>
+                                    <p id="count-pending" class="text-2xl font-bold text-yellow-700">0</p>
+                                </div>
+                                <img class="w-8 h-8" src="../svg/clock_yellow.svg" alt="Icono Pending">
                             </div>
-                            <div>
-                                <p class="text-4xl font-bold text-gray-800">728</p>
-                                <p class="text-sm text-gray-500 mt-1">Pedidos en preparacion</p>
-                            </div>
-                        </div>
 
-                        <div
-                            class="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4 border-l-4 border-green-500">
-                            <div class="flex items-center justify-center w-16 h-16 rounded-full bg-green-100">
-                                <img src="../svg/check-mark-circle_green.svg"
-                                    alt="Icono Check Entregado" class="w-8 h-8">
+                            <div class="card bg-blue-50 p-4 rounded-xl shadow flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-sm text-blue-800 font-semibold">En progreso</h4>
+                                    <p id="count-in-progress" class="text-2xl font-bold text-blue-700">0</p>
+                                </div>
+                                <img class="w-8 h-8" src="../svg/update_blue.svg" alt="Icono in progress">
                             </div>
-                            <div>
-                                <p class="text-4xl font-bold text-gray-800">1500</p>
-                                <p class="text-sm text-gray-500 mt-1">Pedidos entregados</p>
+
+                            <div class="card bg-red-50 p-4 rounded-xl shadow flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-sm text-red-800 font-semibold">Cancelados</h4>
+                                    <p id="count-canceled" class="text-2xl font-bold text-red-700">0</p>
+                                </div>
+                                <img class="w-8 h-8" src="../svg/close_red.svg" alt="Icono Canceled">
                             </div>
+
                         </div>
                     </div>
 
@@ -98,170 +98,28 @@
                         </div>
 
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-100">
-                                <thead class="bg-white">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
                                     <tr>
-                                        <th
-                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        </th>
-                                        <th
-                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            ID Pedido</th>
-                                        <th
-                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th class="px-2 py-3 text-left text-xs font-semibold text-gray-500 uppercase">ID
+                                            Pedido</th>
+                                        <th class="px-2 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
                                             Empleado</th>
-                                        <th
-                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th class="px-2 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
                                             Mesa</th>
-                                        <th
-                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Cant total</th>
-                                        <th
-                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th class="px-2 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
                                             Precio</th>
-                                        <th
-                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Creacion</th>
-                                        <th
-                                            class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th class="px-2 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
+                                            Creación</th>
+                                        <th class="px-2 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
                                             Status</th>
                                     </tr>
                                 </thead>
-                                <tbody id="ordersTableBody" class="bg-white divide-y divide-gray-100">
-                                    <tr class="order-row hover:bg-gray-50 transition duration-75" data-status="Complete"
-                                        data-employee-name="John Doe">
-                                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox"
-                                                class="rounded text-blue-600 border-gray-300 w-4 h-4"></td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                            DE124321</td>
-                                        <td class="py-3 px-2 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="user-initials bg-john mr-3">JD</div>
-                                                <div>
-                                                    <p class="text-sm font-medium text-gray-800 employee-name">John Doe
-                                                    </p>
-                                                    <p class="text-xs text-gray-400">johndoe@gmail.com</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">Software License
-                                        </td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2</td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">$18,50.34</td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2024-06-15</td>
-                                        <td class="py-3 px-2 whitespace-nowrap">
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-700">Complete</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="order-row hover:bg-gray-50 transition duration-75" data-status="Canceled"
-                                        data-employee-name="Kierra Franco">
-                                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox"
-                                                class="rounded text-blue-600 border-gray-300 w-4 h-4"></td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                            DE124324</td>
-                                        <td class="py-3 px-2 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="user-initials bg-kierra mr-3">KF</div>
-                                                <div>
-                                                    <p class="text-sm font-medium text-gray-800 employee-name">Kierra
-                                                        Franco</p>
-                                                    <p class="text-xs text-gray-400">kierra@gmail.com</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">Software License
-                                        </td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">3</td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">$18,50.34</td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2024-06-15</td>
-                                        <td class="py-3 px-2 whitespace-nowrap">
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-700">Canceled</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="order-row hover:bg-gray-50 transition duration-75" data-status="Pending"
-                                        data-employee-name="Emerson Workman">
-                                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox"
-                                                class="rounded text-blue-600 border-gray-300 w-4 h-4"></td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                            DE124322</td>
-                                        <td class="py-3 px-2 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="user-initials bg-emerson mr-3">EW</div>
-                                                <div>
-                                                    <p class="text-sm font-medium text-gray-800 employee-name">Emerson
-                                                        Workman
-                                                    </p>
-                                                    <p class="text-xs text-gray-400">emerson@gmail.com</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">Software License
-                                        </td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">3</td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">$18,50.34</td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2024-06-15</td>
-                                        <td class="py-3 px-2 whitespace-nowrap">
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-700">Pending</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="order-row hover:bg-gray-50 transition duration-75" data-status="Complete"
-                                        data-employee-name="Chance Philips">
-                                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox"
-                                                class="rounded text-blue-600 border-gray-300 w-4 h-4"></td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                            DE124323</td>
-                                        <td class="py-3 px-2 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="user-initials bg-chance mr-3">CP</div>
-                                                <div>
-                                                    <p class="text-sm font-medium text-gray-800 employee-name">Chance
-                                                        Philips
-                                                    </p>
-                                                    <p class="text-xs text-gray-400">chance@gmail.com</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">Software License
-                                        </td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">3</td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">$18,50.34</td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2024-06-15</td>
-                                        <td class="py-3 px-2 whitespace-nowrap">
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-700">Complete</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="order-row hover:bg-gray-50 transition duration-75" data-status="Pending"
-                                        data-employee-name="Terry Goldt">
-                                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox"
-                                                class="rounded text-blue-600 border-gray-300 w-4 h-4"></td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                            DE124320</td>
-                                        <td class="py-3 px-2 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="user-initials bg-terry mr-3">TG</div>
-                                                <div>
-                                                    <p class="text-sm font-medium text-gray-800 employee-name">Terry
-                                                        Goldt</p>
-                                                    <p class="text-xs text-gray-400">terry@email.com</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">Software License
-                                        </td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">3</td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">$18,50.34</td>
-                                        <td class="py-3 px-2 whitespace-nowrap text-sm text-gray-500">2024-06-15</td>
-                                        <td class="py-3 px-2 whitespace-nowrap">
-                                            <span
-                                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-700">Pending</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
+                                <tbody id="ordersTableBody" class="bg-white divide-y divide-gray-200"></tbody>
                             </table>
+                            <div id="paginationContainer" class="flex justify-center items-center mt-4"></div>
+
+
                         </div>
 
                         <div class="flex justify-between items-center mt-6 text-sm">
@@ -323,9 +181,10 @@
                 </div>
             </div>
 
-            <script src="../components/alerts.js"></script>
+            <script type="module" src="../api/api.js"></script>
+            <script type="module" src="../components/alerts.js"></script>
             <script src="../components/components.js"></script>
-            <script src="./orders-adm.js"></script>
+            <script type="module" src="./orders-adm.js"></script>
             <script>
                 // Inicializar sidebar/topbar/modal
                 initComponents();

@@ -1,0 +1,22 @@
+.drop-area {
+    border: 2px dashed #cbd5e1;
+    transition: border-color 0.3s ease;
+}
+
+.drop-area.drag-over {
+    border-color: #6366f1;
+}
+
+.modal {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.modal-content-transition {
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
