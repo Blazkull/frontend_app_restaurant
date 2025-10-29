@@ -2,11 +2,10 @@
 // Configuración de la API con Axios
 // ======================================================
 
-//import axios from "axios";
 import showAlert from "../components/alerts.js";
 
 // Detectar entorno (usa solo el backend en la nube si el local no está activo)
-const isBackendLocal = false; // Cambiar a true si se usa backend local
+const isBackendLocal = false; // Cambia a true si usas backend local
 const API_URL_LOCAL = "http://127.0.0.1:8000";
 const API_URL_PROD = "https://backend-app-restaurant-2kfa.onrender.com";
 
@@ -17,7 +16,10 @@ const API_URL = isBackendLocal ? API_URL_LOCAL : API_URL_PROD;
 // ======================================================
 
 const api = axios.create({
-  baseURL: `${API_URL}/api`
+  baseURL: `${API_URL}/api`,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 // ======================================================
@@ -46,7 +48,7 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response) {
       const { status } = error.response;
 
@@ -55,21 +57,20 @@ api.interceptors.response.use(
         localStorage.removeItem("token");
         localStorage.removeItem("role");
 
-        showAlert({
+        const result = await showAlert({
           type: "info",
           title: "Sesión expirada",
           message: "Por favor, inicia sesión nuevamente.",
-        }).then((result) => {
-          // Solo redirige si el usuario confirma
-          if (result.isConfirmed) {
-            window.location.href = "../login/login.html";
-          }
         });
+
+        if (result.isConfirmed) {
+          window.location.href = "../login/login.html";
+        }
       }
 
       // Error de servidor
       else if (status >= 500) {
-        showAlert({
+        await showAlert({
           type: "error",
           title: "Error del servidor",
           message: "Ocurrió un problema al conectar con el servidor. Intenta más tarde.",
@@ -78,7 +79,7 @@ api.interceptors.response.use(
 
       // Error de cliente (400–499 distinto de autenticación)
       else if (status >= 400) {
-        showAlert({
+        await showAlert({
           type: "info",
           title: "Error en la solicitud",
           message: error.response.data?.detail || "Verifica los datos enviados.",
@@ -86,7 +87,7 @@ api.interceptors.response.use(
       }
     } else {
       // Error de red o timeout
-      showAlert({
+      await showAlert({
         type: "error",
         title: "Error de conexión",
         message: "No se pudo conectar con el servidor. Revisa tu conexión a Internet.",

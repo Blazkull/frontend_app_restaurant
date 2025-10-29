@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link type="text/css" rel="stylesheet" href="./mantenimiento.css"/>
+  </head>
+  <body>
+    <!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TailAdmin - Maintenance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Color azul fuerte para el ícono
+                        'maintenance-blue': '#4c6fff', 
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilo para el fondo cuadriculado sutil, como en la imagen */
+        body {
+            background-image: linear-gradient(to right, #f8fafc 1px, transparent 1px),
+                              linear-gradient(to bottom, #f8fafc 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+
+<body class="bg-white min-h-screen flex flex-col items-center justify-center antialiased font-sans">
+
+    <div class="text-center p-8">
+        
+        <div class="text-maintenance-blue mb-10 relative inline-block">
+            <svg data-lucide="cog" class="w-28 h-28 mx-auto"></svg>
+            
+            <svg data-lucide="cog" class="w-10 h-10 absolute -top-4 -right-8 opacity-75 transform rotate-12"></svg>
+            <svg data-lucide="cog" class="w-7 h-7 absolute -top-6 -right-2 opacity-50 transform -rotate-12"></svg>
+        </div>
+        
+        <h1 class="text-5xl md:text-6xl font-black tracking-tighter text-gray-900 mb-4">
+            MAINTENANCE
+        </h1>
+        
+        <p class="text-lg text-gray-500 mb-2">
+            Our Site is currently under maintenance We will be back Shortly
+        </p>
+        <p class="text-lg text-gray-500 mb-8">
+            Thank You For Patience
+        </p>
+
+        <button id="home-button"
+            class="px-8 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
+            Back to Home Page
+        </button>
+
+    </div>
+
+    <footer class="absolute bottom-6 text-sm text-gray-400">
+        © 2027 - TailAdmin
+    </footer>
+
+    <br>
+
+    <script src="./maintenance.js"></script>
+    <script>
+        // Inicializar íconos de Lucide
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
+    <script type="module" src="mantenimiento.js"></script>
+    <script type="module" src="../../components/components.js"></script>
+  </body>
+</html>

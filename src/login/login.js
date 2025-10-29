@@ -29,7 +29,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     localStorage.setItem("username", username); // GUARDAR USERNAME
 
     // Redirigir al dashboard o página principal
-    window.location.href = "src/usuarios/usuarios.html";
+    window.location.href = "../usuarios/usuarios.html";
 
   } catch (error) {
     if (error.response) {

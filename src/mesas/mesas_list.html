@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vista Mesero - Mesas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- AXIOS ES NECESARIO PARA LAS PETICIONES API -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'primary-blue': '#4c6fff', 
+                }
+            }
+        }
+    }
+  </script>
+</head>
+
+<body class="bg-gray-50 antialiased font-sans">
+  <div class="flex min-h-screen">
+    <div id="sidebar"></div>
+
+    <main class="ml-64 flex-1 flex flex-col">
+      <div id="topbar"></div>
+
+      <div id="content" class="p-6">
+        <main class="flex-1 p-6">
+          <header class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Mapa de Mesas</h1>
+          </header>
+
+          <div id="mesas-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Las mesas se cargarán aquí dinámicamente -->
+          </div>
+        </main>
+      </div>
+    </main>
+  </div>
+
+  <div id="logoutModal"
+      class="hidden fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50">
+      <div
+          class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6 text-center transform scale-95 opacity-0 transition-all duration-300">
+          <h2 class="text-2xl font-bold text-gray-800 mb-3">¿Estás seguro de salir?</h2>
+          <p class="text-gray-500 text-sm mb-6">
+              Si cierras sesión perderás el acceso inmediato al sistema y deberás ingresar nuevamente.
+          </p>
+          <div class="flex justify-center gap-4">
+              <button id="cancelLogout"
+                  class="px-6 py-2 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition">
+                  Cerrar
+              </button>
+              <button id="confirmLogout"
+                  class="px-6 py-2 rounded-xl bg-blue-600 text-white font-medium shadow-md hover:bg-blue-700 transition">
+                  Continuar
+              </button>
+          </div>
+      </div>
+  </div>
+
+  <!-- Cargar componentes primero -->
+  <script src="../components/components.js"></script>
+  
+  <!-- Cargar el módulo de mesas (archivo JS correcto) -->
+  <script type="module" src="./mesas_list.js"></script>
+  
+  <script>
+    // Inicializar sidebar/topbar/modal
+    if (typeof initComponents === 'function') {
+        initComponents();
+    }
+  </script>
+</body>
+
+</html>

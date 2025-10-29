@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Facturación</title>
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Iconos Lucide -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Configuración Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#4c6fff',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 antialiased font-sans">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar"></div>
+
+        <!-- Contenido principal -->
+        <main class="ml-64 flex-1 flex flex-col">
+            <div id="topbar"></div>
+
+            <div id="content" class="p-6">
+                <header class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold">Listar facturas</h1>
+                </header>
+
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <!-- Filtros superiores -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 border-b pb-4">
+                        <div id="filter-buttons" class="text-sm font-medium text-gray-500 flex space-x-1">
+                            <button id="filter-all" data-filter="all"
+                                class="px-3 py-1 border-b-2 border-primary-blue text-primary-blue font-semibold transition duration-150 active">
+                                All Invoices
+                            </button>
+                            <button id="filter-unpaid" data-filter="unpaid"
+                                class="px-3 py-1 border-b-2 border-transparent hover:border-gray-200 transition duration-150">
+                                Unpaid
+                            </button>
+                            <button id="filter-paid" data-filter="paid"
+                                class="px-3 py-1 border-b-2 border-transparent hover:border-gray-200 transition duration-150">
+                                Paid
+                            </button>
+                            <button id="filter-draft" data-filter="draft"
+                                class="px-3 py-1 border-b-2 border-transparent hover:border-gray-200 transition duration-150">
+                                Draft
+                            </button>
+                        </div>
+
+                        <!-- Barra de búsqueda -->
+                        <div class="flex items-center space-x-3 mt-4 sm:mt-0">
+                            <div class="relative w-full sm:w-64">
+                                <svg data-lucide="search"
+                                    class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"></svg>
+                                <input type="text" id="search-input" placeholder="Buscar factura..."
+                                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-primary-blue focus:border-primary-blue">
+                            </div>
+                            <button
+                                class="flex items-center px-4 py-2 bg-gray-100 text-gray-600 rounded-xl font-medium hover:bg-gray-200 transition duration-150">
+                                <svg data-lucide="filter" class="w-4 h-4 mr-2"></svg>
+                                Filtros
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de facturas -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="border-b text-left text-sm font-medium text-gray-500">
+                                    <th class="p-3 w-10">
+                                        <input type="checkbox"
+                                            class="rounded border-gray-300 text-primary-blue focus:ring-primary-blue">
+                                    </th>
+                                    <th class="p-3">Número de factura</th>
+                                    <th class="p-3">Mesa</th>
+                                    <th class="p-3">Cliente</th>
+                                    <th class="p-3">Fecha de creación</th>
+                                    <th class="p-3">Total</th>
+                                    <th class="p-3">Estado</th>
+                                    <th class="p-3 text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoices-table-body">
+                                <!-- Las facturas se renderizan aquí dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación / resumen -->
+                    <div class="flex justify-between items-center pt-4 mt-4 border-t">
+                        <span id="pagination-info" class="text-sm text-gray-600">Mostrando 1 a 10 de 114</span>
+                        <div class="flex space-x-2">
+                            <!-- botones de paginación opcionales -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de cierre de sesión -->
+    <div id="logoutModal"></div>
+
+    <!-- Componentes -->
+    <script src="../components/components.js"></script>
+
+    <!-- SweetAlert2 (debe ir antes del JS de facturas) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Script principal -->
+    <script type="module" src="./facturas_vista.js"></script>
+
+    <script>
+        if (typeof initComponents === 'function') {
+            initComponents();
+        }
+
+        // Inicializar iconos lucide
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+
+</html>

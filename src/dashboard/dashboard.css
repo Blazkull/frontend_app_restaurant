@@ -1,0 +1,110 @@
+/* style.css - ajustes finos para que quede parecido a la imagen */
+
+/* body: already white via tailwind; small neutral background stripes */
+body {
+    background-color: #ffffff;
+}
+
+/* subtle card border to match mock */
+.card-stats,
+.bg-white {
+    border: 1px solid #eef2f7;
+}
+
+/* rounded cards shadow */
+.shadow-sm {
+    box-shadow: 0 1px 4px rgba(16, 24, 40, 0.04);
+}
+
+/* small typography tweaks */
+.text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+/* date input styling */
+#dateRange {
+    background: transparent;
+    border: none;
+    min-width: 170px;
+}
+
+/* status badge */
+.badge {
+    display: inline-block;
+    padding: .25rem .5rem;
+    border-radius: 9999px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+/* btn range */
+.btn-range {
+    border: 1px solid #e6edf3;
+    background: white;
+    color: #374151;
+}
+
+/* top dishes list style */
+#top-dishes li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    transition: background .15s;
+}
+
+#top-dishes li:hover {
+    background: #fbfbfd;
+}
+
+/* invoice & table padding */
+table thead th,
+table tbody td {
+    padding: .75rem .5rem;
+    vertical-align: middle;
+}
+
+/* small responsive adjustments */
+@media (max-width: 900px) {
+    #sidebar {
+        display: none;
+    }
+
+    main {
+        padding: 1rem;
+    }
+}
+
+/* ApexCharts tweaks (center donut labels) */
+.apexcharts-canvas .apexcharts-inner .apexcharts-datalabels-group {
+    font-family: 'Inter', sans-serif;
+}
+
+.status-complete {
+  color: #16a34a; /* verde Tailwind 600 */
+  font-weight: 600;
+}
+
+.status-pending {
+  color: #f59e0b; /* amarillo Tailwind 500 */
+  font-weight: 600;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+}
+
+.avatar-blue { background-color: #3b82f6; }
+.avatar-pink { background-color: #ec4899; }
+.avatar-sky { background-color: #0ea5e9; }
+.avatar-orange { background-color: #f97316; }
+.avatar-green { background-color: #10b981; }

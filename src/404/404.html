@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error 404 - TailAdmin</title>
+
+    <link rel="stylesheet" href="./404.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'error-blue': '#4c6fff',
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        /* Fondo cuadriculado sutil */
+        body {
+            background-image: linear-gradient(to right, #f8fafc 1px, transparent 1px),
+                linear-gradient(to bottom, #f8fafc 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+
+<body class="bg-white min-h-screen flex flex-col items-center justify-center antialiased font-sans">
+
+    <div class="text-center p-8">
+        <h1 class="text-6xl md:text-8xl font-black tracking-tighter text-gray-900 mb-6">
+            ERROR
+        </h1>
+
+        <div class="text-error-blue mb-8 flex justify-center items-center">
+            <span class="text-[15rem] leading-none font-extrabold tracking-tighter">4</span>
+
+            <!-- SVG centrado como el “0” -->
+            <span class="relative inline-block h-[15rem] w-[12rem] flex justify-center items-center">
+                <div
+                    class="flex justify-center items-center rounded-full border-[2rem] border-error-blue w-[11rem] h-[11rem]">
+                    <i data-lucide="frown" class="w-[8rem] h-[8rem] text-error-blue"></i>
+                </div>
+            </span>
+
+            <span class="text-[15rem] leading-none font-extrabold tracking-tighter">4</span>
+        </div>
+
+        <p class="text-lg text-gray-500 mb-8">
+            ¡No podemos encontrar la página que estás buscando!
+        </p>
+
+        <button id="home-button"
+            class="px-8 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium shadow-md hover:bg-gray-100 transition duration-300 ease-in-out">
+            Volver atrás
+        </button>
+    </div>
+
+    <footer class="absolute bottom-6 text-sm text-gray-400">
+        © 2027 - TailAdmin
+    </footer>
+
+    <script src="./404.js"></script>
+</body>
+
+</html>

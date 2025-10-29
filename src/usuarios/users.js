@@ -2,9 +2,27 @@ import api from "../api/api.js";
 import showAlert from "../components/alerts.js";
 
 let users = [];
+let roles = []; 
 let currentPage = 1;
 let showingDeleted = false;
 const rowsPerPage = 10;
+
+// =============================
+//Cargar roles del backend
+// =============================
+async function fetchRoles() {
+  try {
+    const response = await api.get("/roles");
+    roles = response.data || [];
+  } catch (error) {
+    console.error("Error al cargar roles:", error);
+    showAlert({
+      title: "Error",
+      message: "No se pudieron cargar los roles.",
+      type: "error",
+    });
+  }
+}
 
 // =============================
 // Cargar usuarios activos o eliminados
@@ -140,7 +158,7 @@ window.openEditModal = openEditModal;
 // Editar usuario
 // =============================
 async function editUser(id) {
-  const numericId = Number(id); 
+  const numericId = Number(id);
   const user = users.find((u) => u.id === numericId);
   if (!user)
     return showAlert({
@@ -257,7 +275,7 @@ async function deleteUser(id) {
         showAlert({
           title: "Usuario eliminado",
           message: "El usuario fue eliminado correctamente.",
-          type: "sucess",
+          type: "success",
         });
         fetchUsers(currentPage);
       } catch (error) {
@@ -317,7 +335,9 @@ function renderTable() {
       ? "text-green-600 bg-green-100 px-2 py-1 rounded-md text-xs"
       : "text-red-600 bg-red-100 px-2 py-1 rounded-md text-xs";
 
-    const rolNombre = u.id_role === 1 ? "Administrador" : "Usuario";
+    //Buscar nombre de rol real
+    const rol = roles.find(r => r.id === u.id_role);
+    const rolNombre = rol ? rol.name : "Desconocido";
 
     const row = `
       <tr class="border-b">
@@ -380,6 +400,26 @@ function updateToggleButton() {
 }
 
 // =============================
+//Rellenar selects con roles
+// =============================
+function populateRoleSelects() {
+  const createRoleSelect = document.querySelector("#createUserModal select");
+  const editRoleSelect = document.querySelector("#edit_role");
+
+  if (createRoleSelect) {
+    createRoleSelect.innerHTML = roles
+      .map(r => `<option value="${r.id}">${r.name}</option>`)
+      .join("");
+  }
+
+  if (editRoleSelect) {
+    editRoleSelect.innerHTML = roles
+      .map(r => `<option value="${r.id}">${r.name}</option>`)
+      .join("");
+  }
+}
+
+// =============================
 // MODAL DE CREACIÓN DE USUARIO
 // =============================
 function openCreateModal() {
@@ -401,8 +441,10 @@ function closeCreateModal() {
 // =============================
 // Inicializar eventos
 // =============================
-document.addEventListener("DOMContentLoaded", () => {
-  fetchUsers();
+document.addEventListener("DOMContentLoaded", async () => {
+  await fetchRoles(); // cargar roles
+  populateRoleSelects(); //llenar selects
+  await fetchUsers();
 
   // Modal creación
   document.getElementById("openCreateUserModal").addEventListener("click", openCreateModal);
@@ -438,20 +480,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    //Incluimos el estado activo por defecto
+    // usar id_role real
     const data = {
       name,
       username,
       email,
       password,
-      id_role: roleSelect === "Administrador" ? 1 : 2,
-      id_status: 1, // <-- Estado "Activo"
+      id_role: Number(roleSelect),
+      id_status: 1,
     };
 
     console.log("Datos enviados al backend:", data);
     await createUser(data);
   });
-
 
   // Modal contraseña
   document.getElementById("cancelUpdatePassword").addEventListener("click", closePasswordModal);
@@ -459,36 +500,31 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =============================
-// BÚSQUEDA Y FILTRO (por nombre, rol, estado)
+// BÚSQUEDA Y FILTRO
 // =============================
 
 // Elementos de la interfaz
 const searchInput = document.getElementById("searchInput");
 const filterBtn = document.getElementById("filterBtn");
 
-// Variables de filtro
 let searchTerm = "";
 let filterRole = "todos";
 let filterStatus = "todos";
 
-// Filtrar usuarios en memoria
 function applyFilters() {
   let filtered = [...users];
 
-  // Filtro por nombre
   if (searchTerm) {
     filtered = filtered.filter((u) =>
       u.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 
-  // Filtro por rol
   if (filterRole !== "todos") {
-    const roleId = filterRole === "Administrador" ? 1 : 2;
-    filtered = filtered.filter((u) => u.id_role === roleId);
+    const roleId = roles.find(r => r.name === filterRole)?.id;
+    if (roleId) filtered = filtered.filter((u) => u.id_role === roleId);
   }
 
-  // Filtro por estado
   if (filterStatus !== "todos") {
     const statusId = filterStatus === "Activo" ? 1 : 2;
     filtered = filtered.filter((u) => u.id_status === statusId);
@@ -497,7 +533,6 @@ function applyFilters() {
   renderFilteredTable(filtered);
 }
 
-// Renderiza la tabla con los resultados filtrados
 function renderFilteredTable(filtered) {
   const tbody = document.getElementById("userTableBody");
   tbody.innerHTML = "";
@@ -518,7 +553,8 @@ function renderFilteredTable(filtered) {
       ? "text-green-600 bg-green-100 px-2 py-1 rounded-md text-xs"
       : "text-red-600 bg-red-100 px-2 py-1 rounded-md text-xs";
 
-    const rolNombre = u.id_role === 1 ? "Administrador" : "Usuario";
+    const rol = roles.find(r => r.id === u.id_role);
+    const rolNombre = rol ? rol.name : "Desconocido";
 
     const row = `
       <tr class="border-b">
@@ -530,22 +566,12 @@ function renderFilteredTable(filtered) {
         <td class="p-3">${u.created_at ? new Date(u.created_at).toLocaleDateString() : "—"}</td>
         <td class="p-3">${u.last_connection ? new Date(u.last_connection).toLocaleDateString() : "—"}</td>
         <td class="p-3 flex space-x-2">
-          ${showingDeleted
-        ? `<button onclick="restoreUser('${u.id}')" class="text-green-600 hover:text-green-800">
-                  <img src="src/svg/update_blue.svg" alt="restaurar" class="w-5 h-5">
-                </button>`
-        : `
-                <button onclick="openEditModal(${u.id})" class="text-blue-600 hover:text-blue-800">
-                  <img src="src/svg/edit_blue.svg" alt="editar" class="w-5 h-5">
-                </button>
-                <button onclick="openPasswordModal('${u.id}')" class="text-yellow-600 hover:text-yellow-800">
-                  <img src="src/svg/lock.svg" alt="contraseña" class="w-5 h-5">
-                </button>
-                <button onclick="deleteUser('${u.id}')" class="text-red-600 hover:text-red-800">
-                  <img src="src/svg/delete_red.svg" alt="eliminar" class="w-5 h-5">
-                </button>
-              `
-      }
+          <button onclick="openEditModal(${u.id})" class="text-blue-600 hover:text-blue-800">
+            <img src="../svg/edit_blue.svg" class="w-5 h-5">
+          </button>
+          <button onclick="deleteUser('${u.id}')" class="text-red-600 hover:text-red-800">
+            <img src="../svg/delete_red.svg" class="w-5 h-5">
+          </button>
         </td>
       </tr>
     `;
@@ -553,123 +579,10 @@ function renderFilteredTable(filtered) {
   });
 }
 
-// =============================
-//  EVENTOS DE FILTRO Y BÚSQUEDA
-// =============================
-
-// Buscar mientras escribe
+// Eventos de filtro
 searchInput.addEventListener("input", (e) => {
   searchTerm = e.target.value.trim();
   applyFilters();
 });
 
-// Abrir modal de filtros
-filterBtn.addEventListener("click", () => {
-  const modalHtml = `
-    <div id="filterModal"
-      class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm
-             opacity-0 invisible transition-all duration-300 ease-out z-50">
-      <div class="bg-white rounded-2xl shadow-xl w-[350px] p-6 transform scale-95
-                  transition-all duration-300 ease-out">
-        <h2 class="text-lg font-semibold mb-4 text-gray-800">Filtrar usuarios</h2>
-
-        <!-- Rol -->
-        <label class="block text-sm font-medium text-gray-600 mb-1">Rol</label>
-        <select id="filterRole" class="w-full border rounded-lg px-3 py-2 mb-3">
-          <option value="todos">Todos</option>
-          <option value="Administrador">Administrador</option>
-          <option value="Usuario">Usuario</option>
-        </select>
-
-        <!-- Estado -->
-        <label class="block text-sm font-medium text-gray-600 mb-1">Estado</label>
-        <select id="filterStatus" class="w-full border rounded-lg px-3 py-2 mb-6">
-          <option value="todos">Todos</option>
-          <option value="Activo">Activo</option>
-          <option value="Inactivo">Inactivo</option>
-        </select>
-
-        <div class="flex justify-end space-x-2">
-          <button id="cancelFilter" class="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100">
-            Cancelar
-          </button>
-          <button id="applyFilter" class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
-            Aplicar
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.body.insertAdjacentHTML("beforeend", modalHtml);
-
-  const modal = document.getElementById("filterModal");
-  const modalBox = modal.querySelector("div");
-
-  // Aparece con animación
-  requestAnimationFrame(() => {
-    modal.classList.remove("opacity-0", "invisible");
-    modalBox.classList.remove("scale-95");
-  });
-
-  // Cerrar modal con animación
-  const closeModal = () => {
-    modalBox.classList.add("scale-95");
-    modal.classList.add("opacity-0");
-    setTimeout(() => modal.remove(), 300);
-  };
-
-  document.getElementById("cancelFilter").addEventListener("click", closeModal);
-
-  document.getElementById("applyFilter").addEventListener("click", () => {
-    filterRole = document.getElementById("filterRole").value;
-    filterStatus = document.getElementById("filterStatus").value;
-    closeModal();
-    applyFilters();
-  });
-
-  // Cerrar si se hace clic fuera del cuadro
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal();
-  });
-});
-
-/*
-// =============================
-// Activar / Desactivar usuario
-// =============================
-async function toggleUserStatus(id, currentStatus) {
-  const newStatus = currentStatus === 1 ? 2 : 1; // 1 = Activo, 2 = Inactivo
-  const actionText = newStatus === 1 ? "activar" : "desactivar";
-
-  showAlert({
-    title: `¿Deseas ${actionText} este usuario?`,
-    message: `El usuario será marcado como ${newStatus === 1 ? "activo" : "inactivo"}.`,
-    type: "confirm",
-    async onConfirm() {
-      try {
-        await api.patch(`/users/${id}/status`, { id_status: newStatus });
-        showAlert({
-          title: `Usuario ${newStatus === 1 ? "activado" : "desactivado"}`,
-          message: `El usuario fue ${newStatus === 1 ? "activado" : "desactivado"} correctamente.`,
-          type: "success",
-        });
-        fetchUsers(currentPage);
-      } catch (error) {
-        console.error("Error al cambiar estado:", error);
-        showAlert({
-          title: "Error",
-          message: "No se pudo cambiar el estado del usuario.",
-          type: "error",
-        });
-      }
-    },
-  });
-}*/
-
-// Exponer globales
-// =============================
-window.editUser = editUser;
-window.deleteUser = deleteUser;
-window.restoreUser = restoreUser;
-window.openPasswordModal = openPasswordModal;
+filterBtn.addEventListener("click", applyFilters);

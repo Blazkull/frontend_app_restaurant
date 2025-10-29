@@ -1,5 +1,5 @@
 import api from "../api/api.js";
-import showAlert from "../components/alerts.js"; 
+import showAlert from "../components/alerts.js";
 
 // ======================================================
 // Variables globales
@@ -24,7 +24,10 @@ const selectCategoria = document.getElementById("categoria");
 
 let currentEditId = null;
 let showingDeleted = false;
-let categories = []; //Guardará las categorías cargadas del backend
+let categories = [];
+
+// Si usas api.js con baseURL configurada, puedes reutilizarla:
+const BASE_URL = api.defaults.baseURL.replace("/api", "");
 
 // ======================================================
 // Cargar categorías dinámicamente
@@ -59,12 +62,11 @@ async function loadCategories() {
 // ======================================================
 async function loadMenuItems() {
   try {
-    // Si estamos viendo eliminados, no sobrescribir la lista
     if (showingDeleted) {
-        await loadDeletedMenuItems();
-        return;
+      await loadDeletedMenuItems();
+      return;
     }
-    
+
     const response = await api.get("/menu_items");
     const items = response.data.items || [];
     renderMenuTable(items, false);
@@ -108,15 +110,16 @@ function renderMenuTable(items, isDeleted) {
     const categoryName =
       categories.find((cat) => cat.id === item.id_category)?.name || "Sin categoría";
 
+    const imageSrc =
+      item.image_url && item.image_url !== "string"
+        ? `${BASE_URL}${item.image_url}`
+        : "https://via.placeholder.com/80";
+
     const row = document.createElement("tr");
     row.innerHTML = `
         <td class="px-3 py-2"><input type="checkbox" class="rounded text-indigo-600"></td>
         <td class="px-3 py-2">
-            <img src="${
-              item.image_url && item.image_url !== "string"
-                ? item.image_url
-                : "https://via.placeholder.com/80"
-            }" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover">
+            <img src="${imageSrc}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover">
         </td>
         <td class="px-3 py-2 font-medium text-gray-800">${item.name}</td>
         <td class="px-3 py-2">${categoryName}</td>
@@ -152,7 +155,6 @@ function renderMenuTable(items, isDeleted) {
     tableBody.appendChild(row);
   });
 
-  // @ts-ignore
   lucide.createIcons();
   if (isDeleted) attachRestoreListeners();
   else attachEventListeners();
@@ -169,96 +171,62 @@ toggleDeletedBtn.addEventListener("click", async () => {
 });
 
 // ======================================================
-// Crear o actualizar ítem (Estrategia Dual)
+// Crear o actualizar ítem (con imagen incluida)
 // ======================================================
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // 1. Obtener y preparar datos
   const nombre = document.getElementById("nombre").value.trim();
   const tiempo = parseInt(document.getElementById("tiempo").value) || 0;
-  const precio = parseFloat(document.getElementById("precio").value) || 0; 
+  const precio = parseFloat(document.getElementById("precio").value) || 0;
   const estado = document.getElementById("estado").value === "Disponible" ? 1 : 2;
-  const categoria = parseInt(document.getElementById("categoria").value); 
-  const imagen = document.getElementById("file-upload").files[0];
+  const categoria = parseInt(document.getElementById("categoria").value);
+  const imagen = fileInput.files[0];
 
-  // 2. VALIDACIÓN (UX)
-  if (!nombre) {
-      showAlert("error", "El nombre del producto es obligatorio.");
-      return;
-  }
-  if (isNaN(categoria) || categoria === 0) { 
-      showAlert("error", "Debes seleccionar una categoría válida.");
-      return;
-  }
-  
-  // 3. Objeto de datos (como JSON)
-  const data = {
-      name: nombre,
-      id_category: categoria,
-      ingredients: "", // Requerido por el servidor
-      estimated_time: tiempo,
-      price: precio,
-      id_status: estado,
-  };
+  if (!nombre) return showAlert("error", "El nombre del producto es obligatorio.");
+  if (isNaN(categoria) || categoria === 0)
+    return showAlert("error", "Debes seleccionar una categoría válida.");
+
+  // Preparar FormData para enviar imagen + datos
+  const formData = new FormData();
+  formData.append("name", nombre);
+  formData.append("id_category", categoria);
+  formData.append("ingredients", "");
+  formData.append("estimated_time", tiempo);
+  formData.append("price", precio);
+  formData.append("id_status", estado);
+  if (imagen) formData.append("image", imagen);
 
   try {
     let response;
-    
-    // ESTRATEGIA DUAL: Si NO hay imagen, usamos JSON simple.
-    if (!imagen) {
-        if (currentEditId) {
-            // PATCH con JSON
-            response = await api.patch(`/menu_items/${currentEditId}`, data);
-        } else {
-            // POST con JSON
-            response = await api.post("/menu_items", data);
-        }
+    if (currentEditId) {
+      response = await api.patch(`/menu_items/${currentEditId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
     } else {
-        // ESTRATEGIA DUAL: Si HAY imagen, usamos FormData.
-        const formData = new FormData();
-        
-        // Convertimos a String para FormData, asegurando formato de número
-        formData.append("name", data.name);
-        formData.append("id_category", data.id_category.toString());
-        formData.append("ingredients", data.ingredients);
-        formData.append("estimated_time", data.estimated_time.toString());
-        
-        // CLAVE: Enviar el precio con el formato correcto (ej: "200.0")
-        formData.append("price", data.price.toFixed(1)); 
-        
-        formData.append("id_status", data.id_status.toString());
-        formData.append("image", imagen);
-
-        if (currentEditId) {
-            // PATCH con FormData
-            response = await api.patch(`/menu_items/${currentEditId}`, formData);
-        } else {
-            // POST con FormData
-            response = await api.post("/menu_items", formData);
-        }
+      response = await api.post("/menu_items", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
     }
 
-    // 4. Manejo de la respuesta
-    const successMsg = currentEditId ? "Producto actualizado correctamente" : "Producto creado correctamente";
-    showAlert("success", successMsg);
+    showAlert(
+      "success",
+      currentEditId
+        ? "Producto actualizado correctamente"
+        : "Producto creado correctamente"
+    );
 
-    // Limpieza y cierre
     modal.classList.add("hidden");
     form.reset();
-    if (imagePreview) imagePreview.src = "https://via.placeholder.com/80";
+    imagePreview.src = "https://via.placeholder.com/80";
     currentEditId = null;
     loadMenuItems();
   } catch (error) {
-    console.error("Error al guardar producto:", error);
-    if (error.response && error.response.status === 422) {
-         // Mostrar el campo faltante o inválido para un mejor debug
-         const field = error.response.data.detail[0]?.loc[1];
-         const msg = field ? `Error de validación en el campo: ${field}` : 'Campos requeridos faltantes o inválidos.';
-         showAlert("error", `Error (422): ${msg}`);
-    } else {
-         showAlert("error", "Error al guardar el producto. Intenta nuevamente.");
-    }
+    console.error("❌ Error al guardar producto:", error);
+    const msg =
+      error.response?.data?.detail ||
+      "Error al guardar el producto. Intenta nuevamente.";
+    showAlert("error", msg);
   }
 });
 
@@ -283,12 +251,10 @@ function attachEventListeners() {
         await loadCategories();
         selectCategoria.value = item.id_category || "";
 
-        if (imagePreview) {
-          imagePreview.src =
-            item.image_url && item.image_url !== "string"
-              ? item.image_url
-              : "https://via.placeholder.com/80";
-        }
+        imagePreview.src =
+          item.image_url && item.image_url !== "string"
+            ? `${BASE_URL}${item.image_url}`
+            : "https://via.placeholder.com/80";
 
         modalTitle.textContent = "Editar producto";
         submitBtn.textContent = "Actualizar";
@@ -303,7 +269,6 @@ function attachEventListeners() {
   document.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.dataset.id;
-      // @ts-ignore
       document.getElementById("delete-product-id").value = id;
       openModal(deleteModal, deleteModalContent);
     });
@@ -318,7 +283,6 @@ function attachRestoreListeners() {
     btn.addEventListener("click", async () => {
       const id = btn.dataset.id;
 
-      // @ts-ignore
       const confirm = await Swal.fire({
         title: "¿Restaurar producto?",
         text: "El producto volverá a estar disponible.",
@@ -348,7 +312,6 @@ function attachRestoreListeners() {
 // Eliminar producto
 // ======================================================
 btnDeleteConfirmar.addEventListener("click", async () => {
-  // @ts-ignore
   const id = document.getElementById("delete-product-id").value;
   try {
     await api.delete(`/menu_items/${id}`);
@@ -366,11 +329,9 @@ btnDeleteConfirmar.addEventListener("click", async () => {
 // ======================================================
 if (fileInput) {
   fileInput.addEventListener("change", (e) => {
-    // @ts-ignore
     const file = e.target.files[0];
     if (file && imagePreview) {
       const reader = new FileReader();
-      // @ts-ignore
       reader.onload = (event) => (imagePreview.src = event.target.result);
       reader.readAsDataURL(file);
     }
@@ -381,11 +342,9 @@ if (fileInput) {
 // Buscar productos
 // ======================================================
 document.getElementById("input-search").addEventListener("input", (e) => {
-  // @ts-ignore
   const query = e.target.value.toLowerCase();
   document.querySelectorAll("#product-list tr").forEach((row) => {
     const name = row.querySelector("td:nth-child(3)")?.textContent.toLowerCase() || "";
-    // @ts-ignore
     row.style.display = name.includes(query) ? "" : "none";
   });
 });
@@ -396,23 +355,22 @@ document.getElementById("input-search").addEventListener("input", (e) => {
 btnCrear.addEventListener("click", async () => {
   form.reset();
   currentEditId = null;
-  if (imagePreview) imagePreview.src = "https://via.placeholder.com/80";
-
+  imagePreview.src = "https://via.placeholder.com/80";
   await loadCategories();
-
   modalTitle.textContent = "Crear producto";
   submitBtn.textContent = "Crear";
-
   openModal(modal, modalContent);
 });
 
 btnCancelar.addEventListener("click", () => {
-    form.reset(); 
-    if (imagePreview) imagePreview.src = "https://via.placeholder.com/80"; 
-    closeModal(modal, modalContent)
+  form.reset();
+  imagePreview.src = "https://via.placeholder.com/80";
+  closeModal(modal, modalContent);
 });
 
-btnDeleteCancelar.addEventListener("click", () => closeModal(deleteModal, deleteModalContent));
+btnDeleteCancelar.addEventListener("click", () =>
+  closeModal(deleteModal, deleteModalContent)
+);
 
 function openModal(modal, content) {
   modal.classList.remove("hidden");
